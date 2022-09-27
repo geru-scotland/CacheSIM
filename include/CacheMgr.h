@@ -15,21 +15,22 @@ class CacheMgr {
 
 public:
     CacheMgr();
-    void setConfig(int16_t wordSize, int16_t blockSize, int8_t setSize, int8_t replaceAlgorithm);
+    void setConfig(int wordSize, int blockSize, int setSize, int replaceAlgorithm);
 
-    int16_t getWordSize();
-    int16_t getBlockSize();
-    int8_t getSetSize();
-    int8_t getReplacementAlgorithm();
+    int getWordSize();
+    int getBlockSize();
+    int getSetSize();
+    int getReplacementAlgorithm();
 
-    void manageNewOperation(int16_t addr, bool opcode);
+    void manageNewOperation(int addr, bool opcode);
 
 
 private:
-    int16_t m_wordSize;
-    int16_t m_blockSize;
-    int8_t m_setSize;
-    int8_t m_replaceAlgorithm;
+    int m_wordSize;
+    int m_blockSize;
+    int m_setSize;
+    int m_replaceAlgorithm;
+    CacheMap* cacheMap;
 
     bool createCacheMap();
 };

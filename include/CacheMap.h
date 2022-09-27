@@ -6,6 +6,7 @@
 #define CACHESIM_CACHEMAP_H
 
 #define CACHE_NUM_BLOCKS 8
+//#define DEBUG
 
 /**
  * Fichero encargado de representar la memoria.
@@ -25,6 +26,8 @@ class CacheMap {
 
 public:
     CacheMap();
+    void addrCheckByDirect(int tag, int blMp, int blMc);
+    void addrCheckBySetAssoc(int tag, int blMp, int setId);
 
 private:
     Block* dir[CACHE_NUM_BLOCKS];

@@ -14,10 +14,10 @@ Simulator::Simulator() {
 
 void Simulator::initConfig(){
 
-    int16_t wordSize;
-    int16_t blockSize;
-    int8_t setSize;
-    int8_t replaceAlgorithm;
+    int wordSize = 0;
+    int blockSize = 0;
+    int setSize = 0;
+    int replaceAlgorithm = 0;
 
     cout << endl;
     cout << endl;
