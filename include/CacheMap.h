@@ -37,8 +37,8 @@ public:
     /**
      * LRU
      */
-    int getCurrentBlockAmountAndReduceLRU(int set = -1);
-    int getLeastRecentlyUsedBlockOrEmpty(int set = -1);
+    int getBlockNumAndReduceLRU(int set = -1);
+    int getLruOrEmpty(int set = -1);
 
     /**
      * FIFO

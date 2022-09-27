@@ -47,7 +47,7 @@ bool CacheMap::addrCheckBySetAssoc(int tag, int blMp, int setId) {
     int i = 0;
     while(i < CACHE_NUM_BLOCKS){
         if(m_cacheDir[i] != nullptr && (m_cacheDir[i]->tag == tag) && (m_cacheDir[i]->setId == setId)){
-            m_cacheDir[i]->lruCounter = getCurrentBlockAmountAndReduceLRU(setId);
+            m_cacheDir[i]->lruCounter = getBlockNumAndReduceLRU(setId);
             return true;
         }
         else
@@ -71,7 +71,7 @@ bool CacheMap::addrCheckByTotAssoc(int tag) {
     int i = 0;
     while(i < CACHE_NUM_BLOCKS){
         if(m_cacheDir[i] != nullptr && (m_cacheDir[i]->tag == tag)){
-            m_cacheDir[i]->lruCounter = getCurrentBlockAmountAndReduceLRU();
+            m_cacheDir[i]->lruCounter = getBlockNumAndReduceLRU();
             return true;
         }
         else
@@ -98,8 +98,8 @@ void CacheMap::manageCacheInsertion(CacheElement* cElement) {
     if(m_algorithm == ALGORITHM_FIFO){ // Por orden de entrada
 
     }else if(m_algorithm == ALGORITHM_LRU){ // Por menos uso
-        cElement->lruCounter = getCurrentBlockAmountAndReduceLRU(cElement->setId);
-        int cPos = getLeastRecentlyUsedBlockOrEmpty(cElement->setId);
+        cElement->lruCounter = getBlockNumAndReduceLRU(cElement->setId);
+        int cPos = getLruOrEmpty(cElement->setId);
         if(cPos != -1){
             cElement->blMc = cPos;
             m_cacheDir[cPos] = cElement;
@@ -107,7 +107,7 @@ void CacheMap::manageCacheInsertion(CacheElement* cElement) {
     }
 }
 
-int CacheMap::getCurrentBlockAmountAndReduceLRU(int set) {
+int CacheMap::getBlockNumAndReduceLRU(int set) {
 
     int i = 0;
     int amount = 0;
@@ -128,11 +128,12 @@ int CacheMap::getCurrentBlockAmountAndReduceLRU(int set) {
     return amount;
 }
 
-int CacheMap::getLeastRecentlyUsedBlockOrEmpty(int set) {
+int CacheMap::getLruOrEmpty(int set) {
 
     int lower = CACHE_NUM_BLOCKS;
     int cachePos = -1;
     int i = 0;
+    int setMax = 0;
     while(i < CACHE_NUM_BLOCKS){
         if(m_cacheDir[i] != nullptr){
             if(set == -1){ // Total assoc
@@ -142,6 +143,7 @@ int CacheMap::getLeastRecentlyUsedBlockOrEmpty(int set) {
                 }
             } else{ // Set assoc
                 if(m_cacheDir[i]->setId == set){
+                    setMax++;
                     if(m_cacheDir[i]->lruCounter < lower){
                         lower = m_cacheDir[i]->lruCounter;
                         cachePos = i;
@@ -149,7 +151,7 @@ int CacheMap::getLeastRecentlyUsedBlockOrEmpty(int set) {
                 }
             }
         }
-        else
+        else if(setMax < 4) //TODO: Poner esto correcto, si 2cj es 4, si 4cj es 2 por block por conjunto.
             return i; // Primera vacia
 
         i++;
@@ -171,7 +173,7 @@ void CacheMap::display(){
     while(i < CACHE_NUM_BLOCKS){
 
         if(m_cacheDir[i] != nullptr){
-            std::cout << "Bloque: " << int(m_cacheDir[i]->blMc) << " | tag: " << int(m_cacheDir[i]->tag)
+            std::cout << "CacheBlock: " << int(m_cacheDir[i]->blMc) << " Set: "<< int(m_cacheDir[i]->setId)<<"| tag: " << int(m_cacheDir[i]->tag)
             << " | blMP: " << int(m_cacheDir[i]->blMp) << " | LRU: " << int(m_cacheDir[i]->lruCounter) << std::endl;
         }
 
