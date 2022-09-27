@@ -9,7 +9,7 @@
 
 /**
  * Cache: 8 blocks
- * Block size: 32 or 64 bytes.
+ * CacheElement size: 32 or 64 bytes.
  * Word size: 4 or 8 bytes.
  *
  * E.g: 32 block size and 4 word size = 8 words.

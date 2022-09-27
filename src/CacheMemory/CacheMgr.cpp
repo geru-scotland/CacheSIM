@@ -86,6 +86,7 @@ void CacheMgr::manageNewOperation(int addr, bool opcode) {
                 // Miss, traerlo en base al algoritmo actual
                 // SI LRU, el que más puntos LRU tenga en ESE conjunto, es el que se sustituye
                 // Dar tag. blMp y setID (quiza también)
+
             }
             break;
         }

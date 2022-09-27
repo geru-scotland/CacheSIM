@@ -32,7 +32,7 @@ bool CacheMap::addrCheckByDirect(int tag, int blMp, int blMc) {
     }
     // No existía, la inserto en cache y devuelvo false para que se sepa que
     // Ha habido fallo.
-    Block* newBlock = new Block;
+    CacheElement* newBlock = new CacheElement;
     newBlock->tag = tag;
     newBlock->blMp = blMp;
     newBlock->blMc = blMc;
@@ -44,9 +44,23 @@ bool CacheMap::addrCheckBySetAssoc(int tag, int blMp, int setId) {
 #ifdef DEBUG
     std::cout <<"[CACHE MAP][SET ASSOC] tag: "<< int(tag) <<"| blMp: " << int(blMp) << "| setId: " << int(setId) << std::endl;
 #endif //DEBUG
-    /**
-     * Acierte o no, creo que hay que actualizar los LRU
-     */
+    int i = 0;
+    while(i < CACHE_NUM_BLOCKS){
+        if(m_cacheDir[i] != nullptr && (m_cacheDir[i]->tag == tag) && (m_cacheDir[i]->setId == setId)){
+            m_cacheDir[i]->lruCounter = getCurrentBlockAmountAndReduceLRU(setId);
+            return true;
+        }
+        else
+            i++;
+    }
+
+    CacheElement* ce = new CacheElement();
+    ce->tag = tag;
+    ce->blMp = blMp;
+    ce->setId = setId;
+
+    manageCacheInsertion(ce);
+
     return false;
 }
 
@@ -63,11 +77,17 @@ bool CacheMap::addrCheckByTotAssoc(int tag) {
         else
             i++;
     }
+    CacheElement* ce = new CacheElement();
+    ce->tag = tag;
+    ce->blMp = tag;
+    ce->setId = -1;
 
-    // Creo el bloque
-    Block* newBlock = new Block;
-    newBlock->tag = tag;
-    newBlock->blMp = tag;
+    manageCacheInsertion(ce);
+
+    return false;
+}
+
+void CacheMap::manageCacheInsertion(CacheElement* cElement) {
 
     /**
      * Busco la primera posición vacía
@@ -78,41 +98,55 @@ bool CacheMap::addrCheckByTotAssoc(int tag) {
     if(m_algorithm == ALGORITHM_FIFO){ // Por orden de entrada
 
     }else if(m_algorithm == ALGORITHM_LRU){ // Por menos uso
-        newBlock->lruCounter = getCurrentBlockAmountAndReduceLRU();
-        int cPos = getLeastRecentlyUsedBlockOrEmpty();
+        cElement->lruCounter = getCurrentBlockAmountAndReduceLRU(cElement->setId);
+        int cPos = getLeastRecentlyUsedBlockOrEmpty(cElement->setId);
         if(cPos != -1){
-            newBlock->blMc = cPos;
-            m_cacheDir[cPos] = newBlock;
+            cElement->blMc = cPos;
+            m_cacheDir[cPos] = cElement;
         }
     }
-
-    return false;
 }
 
-int CacheMap::getCurrentBlockAmountAndReduceLRU() {
+int CacheMap::getCurrentBlockAmountAndReduceLRU(int set) {
 
     int i = 0;
     int amount = 0;
     while(i < CACHE_NUM_BLOCKS){
         if(m_cacheDir[i] != nullptr){
-            amount++;
-            m_cacheDir[i]->lruCounter--;
+            if(set == -1){ // Total assoc
+                amount++;
+                m_cacheDir[i]->lruCounter--;
+            } else{ // set assoc
+                if(m_cacheDir[i]->setId == set){
+                    amount++;
+                    m_cacheDir[i]->lruCounter--;
+                }
+            }
         }
         i++;
     }
     return amount;
 }
 
-int CacheMap::getLeastRecentlyUsedBlockOrEmpty() {
+int CacheMap::getLeastRecentlyUsedBlockOrEmpty(int set) {
 
     int lower = CACHE_NUM_BLOCKS;
     int cachePos = -1;
     int i = 0;
     while(i < CACHE_NUM_BLOCKS){
         if(m_cacheDir[i] != nullptr){
-            if(m_cacheDir[i]->lruCounter < lower){
-                lower = m_cacheDir[i]->lruCounter;
-                cachePos = i;
+            if(set == -1){ // Total assoc
+                if(m_cacheDir[i]->lruCounter < lower){
+                    lower = m_cacheDir[i]->lruCounter;
+                    cachePos = i;
+                }
+            } else{ // Set assoc
+                if(m_cacheDir[i]->setId == set){
+                    if(m_cacheDir[i]->lruCounter < lower){
+                        lower = m_cacheDir[i]->lruCounter;
+                        cachePos = i;
+                    }
+                }
             }
         }
         else

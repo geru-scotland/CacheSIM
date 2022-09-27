@@ -11,13 +11,18 @@ typedef struct {
     int blMp;
     int blMc;
     int tag;
+    int setId;
+
     int lruCounter;
+    int fifoCounter;
+
     bool free;
-    int fifoOrder;
-} Block;
+    bool dirty;
+    bool replaced;
+} CacheElement;
 
 /**
- * Matriz de punteros a blocks
+ * Matriz de punteros a CacheElement
  */
 class CacheMap {
 
@@ -27,17 +32,22 @@ public:
     bool addrCheckByDirect(int tag, int blMp, int blMc);
     bool addrCheckBySetAssoc(int tag, int blMp, int setId);
     bool addrCheckByTotAssoc(int blMp);
+    void manageCacheInsertion(CacheElement* ce);
 
     /**
      * LRU
      */
-    int getCurrentBlockAmountAndReduceLRU();
-    int getLeastRecentlyUsedBlockOrEmpty();
+    int getCurrentBlockAmountAndReduceLRU(int set = -1);
+    int getLeastRecentlyUsedBlockOrEmpty(int set = -1);
+
+    /**
+     * FIFO
+     */
 
     void display();
 
 private:
-    Block* m_cacheDir[CACHE_NUM_BLOCKS]{};
+    CacheElement* m_cacheDir[CACHE_NUM_BLOCKS]{};
     int m_algorithm;
 };
 
