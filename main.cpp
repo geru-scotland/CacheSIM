@@ -1,6 +1,17 @@
 #include <iostream>
+#include <Simulator.h>
+
+using namespace  std;
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+
+    Simulator sim; // Stack
+    sim.initConfig();
+
+    int16_t addr = 0;
+
+    while(addr != -1){
+        addr = sim.manageNewAddress();
+    }
     return 0;
 }

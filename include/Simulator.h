@@ -1,9 +1,11 @@
 //
-// Created by Eideann on 27/9/22.
+// Created by Basajaun on 27/9/22.
 //
 
 #ifndef CACHESIM_SIMULATOR_H
 #define CACHESIM_SIMULATOR_H
+
+#include "CacheMgr.h"
 
 /**
  * Cache: 8 blocks
@@ -24,11 +26,11 @@
 class Simulator {
 public:
     Simulator();
-    void setSettings();
+    void initConfig();
+    int16_t manageNewAddress();
 
 private:
-    int cache_size;
-    int word_size;
+    CacheMgr* cm;
 };
 
 
