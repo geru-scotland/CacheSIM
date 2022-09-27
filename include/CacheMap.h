@@ -5,19 +5,17 @@
 #ifndef CACHESIM_CACHEMAP_H
 #define CACHESIM_CACHEMAP_H
 
+#define CACHE_NUM_BLOCKS 8
 
 /**
  * Fichero encargado de representar la memoria.
  */
 
-struct Word {
-
-};
 
 struct Block {
     int id;
+    int tag;
     bool lru;
-    Word* words[]; // Revisar esto. Crear un init del simulator en base a los params de entrada y que se cree un vector o array de punteros en consecuencia.
 };
 
 /**
@@ -29,7 +27,7 @@ public:
     CacheMap();
 
 private:
-
+    Block* dir[CACHE_NUM_BLOCKS];
 };
 
 #endif //CACHESIM_CACHEMAP_H

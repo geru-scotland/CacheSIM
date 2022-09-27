@@ -5,8 +5,8 @@
 #ifndef CACHESIM_CACHEMGR_H
 #define CACHESIM_CACHEMGR_H
 
-
 #include <cstdint>
+#include "CacheMap.h"
 
 /**
  * Clase encargada de gestionar la memoria completamente.
@@ -23,6 +23,7 @@ public:
     int8_t getReplacementAlgorithm();
 
     void manageNewOperation(int16_t addr, bool opcode);
+
 
 private:
     int16_t m_wordSize;

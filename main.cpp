@@ -11,7 +11,7 @@ int main() {
     int16_t addr = 0;
 
     while(addr != -1){
-        addr = sim.manageNewAddress();
+        addr = sim.newAddress();
     }
     return 0;
 }

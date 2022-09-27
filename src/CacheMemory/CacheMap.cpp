@@ -7,6 +7,6 @@
 
 
 CacheMap::CacheMap(){
-    std::cout << "\n CacheMap loaded \n";
+
 }
 

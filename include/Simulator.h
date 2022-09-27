@@ -27,7 +27,7 @@ class Simulator {
 public:
     Simulator();
     void initConfig();
-    int16_t manageNewAddress();
+    int16_t newAddress();
 
 private:
     CacheMgr* cm;

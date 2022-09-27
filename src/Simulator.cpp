@@ -4,6 +4,7 @@
 #include <iostream>
 #include "Simulator.h"
 #include "CacheMgr.h"
+
 using namespace std;
 
 Simulator::Simulator() {
@@ -50,10 +51,9 @@ void Simulator::initConfig(){
 
     cm->setConfig(wordSize, blockSize, setSize, replaceAlgorithm);
 
-    cout << "Tamaño de palabra elegido: " << cm->getWordSize() << endl;
 }
 
-int16_t Simulator::manageNewAddress() {
+int16_t Simulator::newAddress() {
 
     int16_t addr = 0;
     bool opcode = 0;
@@ -64,6 +64,6 @@ int16_t Simulator::manageNewAddress() {
     cin >> opcode;
     cout << endl;
     if(addr != -1)
-        cm->manageNewOperation();
+        cm->manageNewOperation(addr, opcode);
     return addr;
 }
