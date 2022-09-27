@@ -54,7 +54,7 @@ void CacheMgr::manageNewOperation(int addr, bool opcode) {
     int blMp = int(addr / pow(2, wordBits + byteBits));  // Bloque a guardar en MC, es la referencia base.
 
     switch(m_setSize) {
-        case 1: // Directa(blMP = tag + bloqueMc)
+        case ASSOC_DIRECT: // Directa(blMP = tag + bloqueMc)
         {
             int blMc = int(blMp % int(pow(2, blockBits)));
             tag = int(blMp / pow(2, blockBits));
@@ -63,13 +63,17 @@ void CacheMgr::manageNewOperation(int addr, bool opcode) {
             if(cacheMap->addrCheckByDirect(tag, blMp, blMc))
             {
                 //Acierto. Mostrar calculos
+                std::cout << std::endl;
+                std::cout << "HIT!" << std::endl;
             }else{
                 //Miss, lo traes. Mostrar calculos
+                std::cout << std::endl;
+                std::cout << "MISS!" << std::endl;
             }
             break;
         }
-        case 2: // Asociativa por conjuntos (blMP = tag + conjunto)
-        case 4:
+        case ASSOC_SET_2: // Asociativa por conjuntos (blMP = tag + conjunto)
+        case ASSOC_SET_4:
         {
             int setBits = int(log2(m_setSize));
             int setId = blMp % int(pow(2, setBits));
@@ -85,10 +89,11 @@ void CacheMgr::manageNewOperation(int addr, bool opcode) {
             }
             break;
         }
-        case 8: // Totalmente asociativa (blMp)
+        case ASSOC_TOTAL: // Totalmente asociativa (blMp)
             if(cacheMap->addrCheckByTotAssoc(blMp))
             {
-                // acierto
+                std::cout << std::endl;
+                std::cout << "HIT!" << std::endl;
             }
             else{
                 //Miss, lo metes done "se pueda", en base al algoritmo.

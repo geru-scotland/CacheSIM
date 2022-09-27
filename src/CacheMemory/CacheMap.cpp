@@ -72,8 +72,8 @@ void CacheMap::display(){
     while(i < CACHE_NUM_BLOCKS){
 
         if(m_cacheDir[i] != nullptr){
-            std::cout << "Bloque: " << int(m_cacheDir[i]->blMc) << " | tag: " << int(m_cacheDir[i]->tag) <<
-                      " | blMP: " << int(m_cacheDir[i]->blMp) << std::endl;
+            std::cout << "Bloque: " << int(m_cacheDir[i]->blMc) << " | tag: " << int(m_cacheDir[i]->tag)
+            << " | blMP: " << int(m_cacheDir[i]->blMp) << std::endl;
         }
 
         i++;
