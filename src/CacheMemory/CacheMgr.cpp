@@ -71,7 +71,8 @@ void CacheMgr::manageNewOperation(int addr, bool opcode) {
             cacheMap->addrCheckBySetAssoc(tag, blMp, setId);
             break;
         }
-        case 8: // Totalmente asociativa (tag)
+        case 8: // Totalmente asociativa (blMp)
+            cacheMap->addrCheckByTotAssoc(blMp);
             break;
         default:
             break;

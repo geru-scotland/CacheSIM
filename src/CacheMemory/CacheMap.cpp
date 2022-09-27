@@ -28,3 +28,9 @@ void CacheMap::addrCheckBySetAssoc(int tag, int blMp, int setId) {
     std::cout <<"[CACHE MAP][SET ASSOC] tag: "<< int(tag) <<"| blMp: " << int(blMp) << "| setId: " << int(setId) << std::endl;
 #endif //DEBUG
 }
+
+void CacheMap::addrCheckByTotAssoc(int blMp) {
+#ifdef DEBUG
+    std::cout <<"[CACHE MAP][TOT ASSOC] blMp: " << int(blMp) << std::endl;
+#endif //DEBUG
+}

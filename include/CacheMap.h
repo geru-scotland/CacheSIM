@@ -28,6 +28,7 @@ public:
     CacheMap();
     void addrCheckByDirect(int tag, int blMp, int blMc);
     void addrCheckBySetAssoc(int tag, int blMp, int setId);
+    void addrCheckByTotAssoc(int blMp);
 
 private:
     Block* dir[CACHE_NUM_BLOCKS];
