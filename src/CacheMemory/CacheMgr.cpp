@@ -10,12 +10,12 @@ CacheMgr::CacheMgr() {
 
 }
 
-void CacheMgr::setConfig(int wordSize, int blockSize, int setSize, int replaceAlgorithm) {
+void CacheMgr::setConfig(int wordSize, int blockSize, int setSize, int algorithm) {
     m_wordSize = wordSize;
     m_blockSize = blockSize;
     m_setSize = setSize;
-    m_replaceAlgorithm = replaceAlgorithm;
-    cacheMap = new CacheMap(setSize);
+    m_replaceAlgorithm = algorithm;
+    cacheMap = new CacheMap(algorithm);
 }
 
 int CacheMgr::getWordSize(){
@@ -108,11 +108,4 @@ void CacheMgr::manageNewOperation(int addr, bool opcode) {
     }
 
     cacheMap->display();
-}
-
-bool CacheMgr::createCacheMap() {
-    /**
-     * Lo creo, pero va a estar vacio, se va "rellenenando" la cache
-     * segun se van efectuando operaciones.
-     */
 }

@@ -6,8 +6,8 @@
 #include "CacheMap.h"
 
 
-CacheMap::CacheMap(int setSize){
-
+CacheMap::CacheMap(int algorithm){
+    m_algorithm = algorithm;
 }
 
 /**
@@ -32,7 +32,6 @@ bool CacheMap::addrCheckByDirect(int tag, int blMp, int blMc) {
     }
     // No existía, la inserto en cache y devuelvo false para que se sepa que
     // Ha habido fallo.
-    std::cout << "[CACHE-REEMPLAZO][WRITE-BACK] Enviando al búfer el bloque antes de sobreescribirlo.";
     Block* newBlock = new Block;
     newBlock->tag = tag;
     newBlock->blMp = blMp;
@@ -51,11 +50,77 @@ bool CacheMap::addrCheckBySetAssoc(int tag, int blMp, int setId) {
     return false;
 }
 
-bool CacheMap::addrCheckByTotAssoc(int blMp) {
+bool CacheMap::addrCheckByTotAssoc(int tag) {
 #ifdef DEBUG
     std::cout <<"[CACHE MAP][TOT ASSOC] blMp: " << int(blMp) << std::endl;
 #endif //DEBUG
+    int i = 0;
+    while(i < CACHE_NUM_BLOCKS){
+        if(m_cacheDir[i] != nullptr && (m_cacheDir[i]->tag == tag)){
+            m_cacheDir[i]->lruCounter = getCurrentBlockAmountAndReduceLRU();
+            return true;
+        }
+        else
+            i++;
+    }
+
+    // Creo el bloque
+    Block* newBlock = new Block;
+    newBlock->tag = tag;
+    newBlock->blMp = tag;
+
+    /**
+     * Busco la primera posición vacía
+     * Si no la hay, entonces aplico el algoritmo
+     * que corresponda.
+     */
+
+    if(m_algorithm == ALGORITHM_FIFO){ // Por orden de entrada
+
+    }else if(m_algorithm == ALGORITHM_LRU){ // Por menos uso
+        newBlock->lruCounter = getCurrentBlockAmountAndReduceLRU();
+        int cPos = getLeastRecentlyUsedBlockOrEmpty();
+        if(cPos != -1){
+            newBlock->blMc = cPos;
+            m_cacheDir[cPos] = newBlock;
+        }
+    }
+
     return false;
+}
+
+int CacheMap::getCurrentBlockAmountAndReduceLRU() {
+
+    int i = 0;
+    int amount = 0;
+    while(i < CACHE_NUM_BLOCKS){
+        if(m_cacheDir[i] != nullptr){
+            amount++;
+            m_cacheDir[i]->lruCounter--;
+        }
+        i++;
+    }
+    return amount;
+}
+
+int CacheMap::getLeastRecentlyUsedBlockOrEmpty() {
+
+    int lower = CACHE_NUM_BLOCKS;
+    int cachePos = -1;
+    int i = 0;
+    while(i < CACHE_NUM_BLOCKS){
+        if(m_cacheDir[i] != nullptr){
+            if(m_cacheDir[i]->lruCounter < lower){
+                lower = m_cacheDir[i]->lruCounter;
+                cachePos = i;
+            }
+        }
+        else
+            return i; // Primera vacia
+
+        i++;
+    }
+    return cachePos;
 }
 
 void CacheMap::display(){
@@ -73,7 +138,7 @@ void CacheMap::display(){
 
         if(m_cacheDir[i] != nullptr){
             std::cout << "Bloque: " << int(m_cacheDir[i]->blMc) << " | tag: " << int(m_cacheDir[i]->tag)
-            << " | blMP: " << int(m_cacheDir[i]->blMp) << std::endl;
+            << " | blMP: " << int(m_cacheDir[i]->blMp) << " | LRU: " << int(m_cacheDir[i]->lruCounter) << std::endl;
         }
 
         i++;

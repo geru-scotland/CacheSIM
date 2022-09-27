@@ -5,20 +5,15 @@
 #ifndef CACHESIM_CACHEMAP_H
 #define CACHESIM_CACHEMAP_H
 
-#define CACHE_NUM_BLOCKS 8
-//#define DEBUG
-
-/**
- * Fichero encargado de representar la memoria.
- */
-
+#include "SharedDefines.h"
 
 typedef struct {
     int blMp;
     int blMc;
     int tag;
-    bool lru;
+    int lruCounter;
     bool free;
+    int fifoOrder;
 } Block;
 
 /**
@@ -27,16 +22,23 @@ typedef struct {
 class CacheMap {
 
 public:
-    CacheMap(int setSize);
+    CacheMap(int algorithm);
 
     bool addrCheckByDirect(int tag, int blMp, int blMc);
     bool addrCheckBySetAssoc(int tag, int blMp, int setId);
     bool addrCheckByTotAssoc(int blMp);
 
+    /**
+     * LRU
+     */
+    int getCurrentBlockAmountAndReduceLRU();
+    int getLeastRecentlyUsedBlockOrEmpty();
+
     void display();
 
 private:
-    Block* m_cacheDir[CACHE_NUM_BLOCKS];
+    Block* m_cacheDir[CACHE_NUM_BLOCKS]{};
+    int m_algorithm;
 };
 
 #endif //CACHESIM_CACHEMAP_H

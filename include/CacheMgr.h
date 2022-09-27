@@ -9,14 +9,6 @@
 #include "CacheMap.h"
 
 
-enum CorrespAssoc{
-    ASSOC_DIRECT = 1,
-
-    ASSOC_SET_2 = 2,
-    ASSOC_SET_4 = 4,
-
-    ASSOC_TOTAL = CACHE_NUM_BLOCKS
-} ;
 /**
  * Clase encargada de gestionar la memoria completamente.
  */
@@ -41,7 +33,6 @@ private:
     int m_replaceAlgorithm;
     CacheMap* cacheMap;
 
-    bool createCacheMap();
 };
 
 #endif //CACHESIM_CACHEMGR_H
