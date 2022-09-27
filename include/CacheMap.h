@@ -27,7 +27,7 @@ typedef struct {
 class CacheMap {
 
 public:
-    CacheMap(int algorithm);
+    CacheMap(int algorithm, int setSize);
 
     bool addrCheckByDirect(int tag, int blMp, int blMc);
     bool addrCheckBySetAssoc(int tag, int blMp, int setId);
@@ -49,6 +49,7 @@ public:
 private:
     CacheElement* m_cacheDir[CACHE_NUM_BLOCKS]{};
     int m_algorithm;
+    int m_setSize;
 };
 
 #endif //CACHESIM_CACHEMAP_H

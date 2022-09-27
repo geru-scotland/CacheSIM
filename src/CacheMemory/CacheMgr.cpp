@@ -15,7 +15,7 @@ void CacheMgr::setConfig(int wordSize, int blockSize, int setSize, int algorithm
     m_blockSize = blockSize;
     m_setSize = setSize;
     m_replaceAlgorithm = algorithm;
-    cacheMap = new CacheMap(algorithm);
+    cacheMap = new CacheMap(algorithm, setSize);
 }
 
 int CacheMgr::getWordSize(){

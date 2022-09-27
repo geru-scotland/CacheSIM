@@ -6,8 +6,9 @@
 #include "CacheMap.h"
 
 
-CacheMap::CacheMap(int algorithm){
+CacheMap::CacheMap(int algorithm, int setSize){
     m_algorithm = algorithm;
+    m_setSize = setSize;
 }
 
 /**
@@ -133,7 +134,7 @@ int CacheMap::getLruOrEmpty(int set) {
     int lower = CACHE_NUM_BLOCKS;
     int cachePos = -1;
     int i = 0;
-    int setMax = 0;
+    int setMax = 0; // si conju
     while(i < CACHE_NUM_BLOCKS){
         if(m_cacheDir[i] != nullptr){
             if(set == -1){ // Total assoc
@@ -151,8 +152,10 @@ int CacheMap::getLruOrEmpty(int set) {
                 }
             }
         }
-        else if(setMax < 4) //TODO: Poner esto correcto, si 2cj es 4, si 4cj es 2 por block por conjunto.
-            return i; // Primera vacia
+        else{
+            if(m_setSize == CACHE_NUM_BLOCKS || (setMax < (CACHE_NUM_BLOCKS / m_setSize)))
+                return i;
+        }
 
         i++;
     }
