@@ -30,7 +30,7 @@ public:
     int16_t newAddress();
 
 private:
-    CacheMgr* cm;
+    CacheMgr* cMgr;
 };
 
 

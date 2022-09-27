@@ -8,7 +8,7 @@
 using namespace std;
 
 Simulator::Simulator() {
-    cm = new CacheMgr();
+    cMgr = new CacheMgr();
 }
 
 
@@ -49,7 +49,7 @@ void Simulator::initConfig(){
     cin >> replaceAlgorithm;
     cout << endl;
 
-    cm->setConfig(wordSize, blockSize, setSize, replaceAlgorithm);
+    cMgr->setConfig(wordSize, blockSize, setSize, replaceAlgorithm);
 
 }
 
@@ -64,6 +64,6 @@ int16_t Simulator::newAddress() {
     cin >> opcode;
     cout << endl;
     if(addr != -1)
-        cm->manageNewOperation(addr, opcode);
+        cMgr->manageNewOperation(addr, opcode);
     return addr;
 }

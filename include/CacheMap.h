@@ -13,11 +13,13 @@
  */
 
 
-struct Block {
-    int id;
+typedef struct {
+    int blMp;
+    int blMc;
     int tag;
     bool lru;
-};
+    bool free;
+} Block;
 
 /**
  * Matriz de punteros a blocks
@@ -25,13 +27,16 @@ struct Block {
 class CacheMap {
 
 public:
-    CacheMap();
-    void addrCheckByDirect(int tag, int blMp, int blMc);
-    void addrCheckBySetAssoc(int tag, int blMp, int setId);
-    void addrCheckByTotAssoc(int blMp);
+    CacheMap(int setSize);
+
+    bool addrCheckByDirect(int tag, int blMp, int blMc);
+    bool addrCheckBySetAssoc(int tag, int blMp, int setId);
+    bool addrCheckByTotAssoc(int blMp);
+
+    void display();
 
 private:
-    Block* dir[CACHE_NUM_BLOCKS];
+    Block* m_cacheDir[CACHE_NUM_BLOCKS];
 };
 
 #endif //CACHESIM_CACHEMAP_H

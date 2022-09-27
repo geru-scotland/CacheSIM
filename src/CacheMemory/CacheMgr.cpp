@@ -15,7 +15,7 @@ void CacheMgr::setConfig(int wordSize, int blockSize, int setSize, int replaceAl
     m_blockSize = blockSize;
     m_setSize = setSize;
     m_replaceAlgorithm = replaceAlgorithm;
-    cacheMap = new CacheMap();
+    cacheMap = new CacheMap(setSize);
 }
 
 int CacheMgr::getWordSize(){
@@ -52,6 +52,7 @@ void CacheMgr::manageNewOperation(int addr, bool opcode) {
     int byteBits = int(log2(m_wordSize));
     int tag = 0;
     int blMp = int(addr / pow(2, wordBits + byteBits));  // Bloque a guardar en MC, es la referencia base.
+
     switch(m_setSize) {
         case 1: // Directa(blMP = tag + bloqueMc)
         {
@@ -59,7 +60,12 @@ void CacheMgr::manageNewOperation(int addr, bool opcode) {
             tag = int(blMp / pow(2, blockBits));
             // Si no existe por tag -> FALLO. Y lo "Traigo" / inserto en el mapa.
             // Siguiendo el tipo de Algoritmo, cuidado con los LRU, contadores y tal
-            cacheMap->addrCheckByDirect(tag, blMp, blMc);
+            if(cacheMap->addrCheckByDirect(tag, blMp, blMc))
+            {
+                //Acierto. Mostrar calculos
+            }else{
+                //Miss, lo traes. Mostrar calculos
+            }
             break;
         }
         case 2: // Asociativa por conjuntos (blMP = tag + conjunto)
@@ -68,16 +74,35 @@ void CacheMgr::manageNewOperation(int addr, bool opcode) {
             int setBits = int(log2(m_setSize));
             int setId = blMp % int(pow(2, setBits));
             tag = int(blMp / pow(2, setBits));
-            cacheMap->addrCheckBySetAssoc(tag, blMp, setId);
+            if(cacheMap->addrCheckBySetAssoc(tag, blMp, setId))
+            {
+                //Acierto
+            }
+            else{
+                // Miss, traerlo en base al algoritmo actual
+                // SI LRU, el que más puntos LRU tenga en ESE conjunto, es el que se sustituye
+                // Dar tag. blMp y setID (quiza también)
+            }
             break;
         }
         case 8: // Totalmente asociativa (blMp)
-            cacheMap->addrCheckByTotAssoc(blMp);
+            if(cacheMap->addrCheckByTotAssoc(blMp))
+            {
+                // acierto
+            }
+            else{
+                //Miss, lo metes done "se pueda", en base al algoritmo.
+                // Recuerda que los algoritmos únicamente surten efecto
+                // Cuando los 8 bloques de la cache estén llenos.
+                // En asocitavia tot, se meten en el primer bloque con hueco
+                // En por conjuntos, en el primer hueco del conjunto.
+            }
             break;
         default:
             break;
     }
 
+    cacheMap->display();
 }
 
 bool CacheMgr::createCacheMap() {
@@ -85,5 +110,4 @@ bool CacheMgr::createCacheMap() {
      * Lo creo, pero va a estar vacio, se va "rellenenando" la cache
      * segun se van efectuando operaciones.
      */
-
 }
