@@ -20,4 +20,19 @@ enum ReplacementAlgorithms {
     ALGORITHM_LRU
 };
 
+
+inline void compareDesc(int counter, int& cmp, int& cachePos, int i = 0) {
+    if(counter < cmp){
+        cmp = counter;
+        cachePos = i;
+    }
+}
+
+inline void compareAsc(int counter, int& cmp, int& cachePos, int i = 0) {
+    if(counter > cmp){
+        cmp = counter;
+        cachePos = i;
+    }
+}
+
 #endif //CACHESIM_SHAREDDEFINES_H

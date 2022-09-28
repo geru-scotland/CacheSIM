@@ -49,7 +49,7 @@ bool CacheMap::addrCheckBySetAssoc(int tag, int blMp, int setId) {
     while(i < CACHE_NUM_BLOCKS){
         if(m_cacheDir[i] != nullptr && (m_cacheDir[i]->tag == tag) && (m_cacheDir[i]->setId == setId)){
             m_cacheDir[i]->lruCounter = getBlockNumAndReduceLRU(setId);
-            return true;
+            return true; // Si HIT, ¿hay que actualizar LRU-FIFO?
         }
         else
             i++;
@@ -73,11 +73,12 @@ bool CacheMap::addrCheckByTotAssoc(int tag) {
     while(i < CACHE_NUM_BLOCKS){
         if(m_cacheDir[i] != nullptr && (m_cacheDir[i]->tag == tag)){
             m_cacheDir[i]->lruCounter = getBlockNumAndReduceLRU();
-            return true;
+            return true;  // Si HIT, ¿hay que actualizar LRU-FIFO?
         }
         else
             i++;
     }
+
     CacheElement* ce = new CacheElement();
     ce->tag = tag;
     ce->blMp = tag;
@@ -90,21 +91,22 @@ bool CacheMap::addrCheckByTotAssoc(int tag) {
 
 void CacheMap::manageCacheInsertion(CacheElement* cElement) {
 
-    /**
-     * Busco la primera posición vacía
-     * Si no la hay, entonces aplico el algoritmo
-     * que corresponda.
-     */
+    void (*pFunc)(int, int &, int &, int) = nullptr;
 
     if(m_algorithm == ALGORITHM_FIFO){ // Por orden de entrada
-
-    }else if(m_algorithm == ALGORITHM_LRU){ // Por menos uso
+        cElement->fifoCounter = 0;
+        increaseFIFOCounters(cElement->setId); // TODO: Y SI ES HIT? Hay que incrementar también
+        pFunc = compareAsc;
+    }else if(m_algorithm == ALGORITHM_LRU){
         cElement->lruCounter = getBlockNumAndReduceLRU(cElement->setId);
-        int cPos = getLruOrEmpty(cElement->setId);
-        if(cPos != -1){
-            cElement->blMc = cPos;
-            m_cacheDir[cPos] = cElement;
-        }
+        cElement->fifoCounter = -1;
+        pFunc = compareDesc;
+    }
+
+    int cPos = getCachePosOrEmpty(cElement->setId, pFunc);
+    if(cPos != -1){
+        cElement->blMc = cPos;
+        m_cacheDir[cPos] = cElement;
     }
 }
 
@@ -129,37 +131,57 @@ int CacheMap::getBlockNumAndReduceLRU(int set) {
     return amount;
 }
 
-int CacheMap::getLruOrEmpty(int set) {
 
-    int lower = CACHE_NUM_BLOCKS;
+int CacheMap::getCachePosOrEmpty(int set, void(*compareFuncPtr)(int, int&, int&, int)) {
+
+    /**
+     * Creo que a la hora de hacer con FIFO, sería igual
+     * pero en lugar de buscar el lower, sería buscar el higher.
+     *
+     * Mirar a ver si puedes hacer esto con template o similar mejor.
+     */
+    int cmp = (m_algorithm == ALGORITHM_FIFO) ? 0 : CACHE_NUM_BLOCKS;
+
     int cachePos = -1;
     int i = 0;
     int setMax = 0; // si conju
     while(i < CACHE_NUM_BLOCKS){
         if(m_cacheDir[i] != nullptr){
+
+            int counter = m_cacheDir[i]->fifoCounter == -1 ? m_cacheDir[i]->lruCounter : m_cacheDir[i]->fifoCounter;
+
             if(set == -1){ // Total assoc
-                if(m_cacheDir[i]->lruCounter < lower){
-                    lower = m_cacheDir[i]->lruCounter;
-                    cachePos = i;
-                }
+                compareFuncPtr(counter, (int &)cmp, (int &)cachePos, i);
             } else{ // Set assoc
                 if(m_cacheDir[i]->setId == set){
                     setMax++;
-                    if(m_cacheDir[i]->lruCounter < lower){
-                        lower = m_cacheDir[i]->lruCounter;
-                        cachePos = i;
-                    }
+                    compareFuncPtr(counter, (int &)cmp, (int &)cachePos, i);
                 }
             }
         }
-        else{
+        else
             if(m_setSize == CACHE_NUM_BLOCKS || (setMax < (CACHE_NUM_BLOCKS / m_setSize)))
                 return i;
-        }
 
         i++;
     }
     return cachePos;
+}
+
+void CacheMap::increaseFIFOCounters(int set){
+    int i = 0;
+    while(i < CACHE_NUM_BLOCKS){
+        if(m_cacheDir[i] != nullptr){
+            if(set == -1){ // Total assoc
+                m_cacheDir[i]->fifoCounter++;
+            } else{ // set assoc
+                if(m_cacheDir[i]->setId == set){
+                    m_cacheDir[i]->fifoCounter++;
+                }
+            }
+        }
+        i++;
+    }
 }
 
 void CacheMap::display(){
@@ -177,7 +199,7 @@ void CacheMap::display(){
 
         if(m_cacheDir[i] != nullptr){
             std::cout << "CacheBlock: " << int(m_cacheDir[i]->blMc) << " Set: "<< int(m_cacheDir[i]->setId)<<"| tag: " << int(m_cacheDir[i]->tag)
-            << " | blMP: " << int(m_cacheDir[i]->blMp) << " | LRU: " << int(m_cacheDir[i]->lruCounter) << std::endl;
+            << " | blMP: " << int(m_cacheDir[i]->blMp) << " | LRU: " << int(m_cacheDir[i]->lruCounter) <<  "| FIFO: " << int(m_cacheDir[i]->fifoCounter) << std::endl;
         }
 
         i++;
