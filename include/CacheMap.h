@@ -24,9 +24,6 @@ struct CacheElement{
     bool replaced = false;
 };
 
-/**
- * Matriz de punteros a CacheElement
- */
 class CacheMap {
 
 public:
@@ -42,6 +39,9 @@ public:
      */
     void setDisplayMode(DisplayMode mode);
     void display();
+    void displayDirect();
+    void displayTotalAsoc();
+    void displaySetAssoc();
 
 private:
     void manageCacheInsertion(CacheElement* ce);

@@ -136,7 +136,7 @@ void CacheMap::manageCacheInsertion(CacheElement* cElement) {
     if(cPos != -1){
         cElement->blMc = cPos;
 
-        if(m_cacheDir[cPos] != nullptr) // TODO: Mensaje diciendo que ha sido reemplazado?
+        if(m_cacheDir[cPos] != nullptr)
         {
             cElement->replaced = true;
             DataMgr::setLastOpStatus(CACHE_FLAG_REPLACED);
@@ -228,6 +228,7 @@ void CacheMap::display(){
     switch(m_displayMode){
 
         case DISPLAY_DIRECT:
+            displayDirect();
             break;
         case DISPLAY_TOTAL_ASOC:
             break;
@@ -236,16 +237,29 @@ void CacheMap::display(){
         default:
             break;
     }
+
+    std::cout << std::endl;
+    std::cout << std::endl;
+}
+
+void CacheMap::displayDirect() {
+
+    //Show column names.
     int i = 0;
     while(i < CACHE_NUM_BLOCKS){
-
         if(m_cacheDir[i] != nullptr){
             std::cout << "CacheBlock: " << int(m_cacheDir[i]->blMc) << " Set: "<< int(m_cacheDir[i]->setId)<<"| tag: " << int(m_cacheDir[i]->tag)
-            << " | blMP: " << int(m_cacheDir[i]->blMp) << " | LRU: " << int(m_cacheDir[i]->lruCounter) <<  "| FIFO: " << int(m_cacheDir[i]->fifoCounter) << std::endl;
+                      << " | blMP: " << int(m_cacheDir[i]->blMp) << " | LRU: " << int(m_cacheDir[i]->lruCounter) <<  "| FIFO: " << int(m_cacheDir[i]->fifoCounter) << std::endl;
         }
 
         i++;
     }
-    std::cout << std::endl;
-    std::cout << std::endl;
+}
+
+void CacheMap::displayTotalAsoc() {
+
+}
+
+void CacheMap::displaySetAssoc() {
+
 }
