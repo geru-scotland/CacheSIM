@@ -38,6 +38,7 @@ void CacheMgr::manageNewOperation(int addr, bool opcode) {
             tag = int(blMp / pow(2, blockBits));
 
             hit = cacheMap->addrCheckByDirect(tag, blMp, blMc);
+            cacheMap->setDisplayMode(DISPLAY_DIRECT);
             break;
         }
         case ASSOC_SET_2:
@@ -48,10 +49,12 @@ void CacheMgr::manageNewOperation(int addr, bool opcode) {
             tag = int(blMp / pow(2, setBits));
 
             hit = cacheMap->addrCheckBySetAssoc(tag, blMp, setId);
+            cacheMap->setDisplayMode(DISPLAY_SET_ASOC);
             break;
         }
         case ASSOC_TOTAL:
             hit = cacheMap->addrCheckByTotAssoc(blMp);
+            cacheMap->setDisplayMode(DISPLAY_TOTAL_ASOC);
             break;
         default:
             break;

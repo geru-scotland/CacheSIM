@@ -37,7 +37,10 @@ public:
     bool addrCheckBySetAssoc(int tag, int blMp, int setId);
     bool addrCheckByTotAssoc(int blMp);
 
-
+    /**
+     * Display
+     */
+    void setDisplayMode(DisplayMode mode);
     void display();
 
 private:
@@ -55,6 +58,7 @@ private:
     void increaseFIFOCounters(int set = -1);
 
     CacheElement* m_cacheDir[CACHE_NUM_BLOCKS]{};
+    DisplayMode m_displayMode;
     int m_algorithm;
     int m_setSize;
     int m_opcode;

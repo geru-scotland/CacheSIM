@@ -26,6 +26,8 @@ public:
     static void increaseAccesses();
 
     static int getTotalCicles();
+    static int getTotalAccesses();
+    static int getTotalHits();
     static float getHitRate();
 
     static int m_wordsPerBlock;

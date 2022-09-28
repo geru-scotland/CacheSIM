@@ -15,6 +15,10 @@ int main() {
         addr = sim.newAddress();
     }
 
-    cout << "Total cicles: "<< DataMgr::getTotalCicles() << endl;
+    cout << "[DATA] Total cicles: "<< DataMgr::getTotalCicles() << endl;
+    cout << "[DATA] Total accesses: "<< DataMgr::getTotalAccesses() << endl;
+    cout << "[DATA] Total hits: "<< DataMgr::getTotalHits() << endl;
+    cout << "--------------------------"<< endl;
+    cout << "[DATA] Hit Rate:  "<< DataMgr::getHitRate() << endl;
     return 0;
 }

@@ -213,6 +213,8 @@ void CacheMap::increaseFIFOCounters(int set){
     }
 }
 
+void CacheMap::setDisplayMode(DisplayMode mode) { m_displayMode = mode; }
+
 void CacheMap::display(){
 
     std::cout << std::endl;
@@ -223,6 +225,17 @@ void CacheMap::display(){
     std::cout << std::endl;
     std::cout << std::endl;
 
+    switch(m_displayMode){
+
+        case DISPLAY_DIRECT:
+            break;
+        case DISPLAY_TOTAL_ASOC:
+            break;
+        case DISPLAY_SET_ASOC:
+            break;
+        default:
+            break;
+    }
     int i = 0;
     while(i < CACHE_NUM_BLOCKS){
 

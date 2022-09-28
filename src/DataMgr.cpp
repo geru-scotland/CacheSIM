@@ -61,17 +61,15 @@ void DataMgr::displayOpResult(bool hit, int cicles) {
     cout << result << " Cicles: "<< cicles << endl;
 }
 
-void DataMgr::setLastOpStatus(CacheFlags flags) {
-    m_status = flags;
-}
+void DataMgr::setLastOpStatus(CacheFlags flags) { m_status = flags; }
 
-void DataMgr::increaseAccesses() {
-    m_accesses++;
-}
+void DataMgr::increaseAccesses() { m_accesses++; }
 
-int DataMgr::getTotalCicles() {
-    return m_totalCicles;
-}
+int DataMgr::getTotalCicles() { return m_totalCicles; }
+
+int DataMgr::getTotalAccesses() { return m_accesses; }
+
+int DataMgr::getTotalHits() { return m_hits;}
 
 float DataMgr::getHitRate() {
     return float(m_hits)/float(m_accesses);

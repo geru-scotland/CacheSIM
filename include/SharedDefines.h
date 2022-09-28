@@ -32,6 +32,12 @@ enum CacheFlags {
     CACHE_FLAG_FREE = 4,
 };
 
+enum DisplayMode {
+    DISPLAY_DIRECT = 0,
+    DISPLAY_TOTAL_ASOC,
+    DISPLAY_SET_ASOC
+};
+
 /*
  * Funciones auxiliares sobre las que se generarán punteros para poder ser pasadas
  * como parámetros.
