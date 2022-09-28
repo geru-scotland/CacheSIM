@@ -20,7 +20,21 @@ enum ReplacementAlgorithms {
     ALGORITHM_LRU
 };
 
+enum OPcodes{
+    OPCODE_READ = 0,
+    OPCODE_WRITE
+};
 
+enum CacheFlags {
+    CACHE_FLAG_DIRTY = 1,
+    CACHE_FLAG_REPLACED = 2,
+    CACHE_FLAG_FREE = 4,
+};
+
+/*
+ * Funciones auxiliares sobre las que se generarán punteros para poder ser pasadas
+ * como parámetros.
+ */
 inline void compareDesc(int counter, int& cmp, int& cachePos, int i = 0) {
     if(counter < cmp){
         cmp = counter;

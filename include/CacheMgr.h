@@ -16,15 +16,9 @@ class CacheMgr {
 
 public:
     CacheMgr();
+
     void setConfig(int wordSize, int blockSize, int setSize, int replaceAlgorithm);
-
-    int getWordSize();
-    int getBlockSize();
-    int getSetSize();
-    int getReplacementAlgorithm();
-
     void manageNewOperation(int addr, bool opcode);
-
 
 private:
     int m_wordSize;

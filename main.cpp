@@ -13,5 +13,7 @@ int main() {
     while(addr != -1){
         addr = sim.newAddress();
     }
+    // Show Global access data / Time.
+    // Clase stática que lo controle.
     return 0;
 }

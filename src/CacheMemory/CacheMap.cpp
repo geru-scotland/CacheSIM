@@ -11,13 +11,10 @@ CacheMap::CacheMap(int algorithm, int setSize){
     m_setSize = setSize;
 }
 
-/**
- * Se inserta en el blMc a la "fuerza", le da igual el algoritmo de reemplazo.
- * Por lo tanto, en el mapa de cache, vas a la blMC y lo cambias.
- * @param tag
- * @param blMp
- * @param blMc
- */
+void CacheMap::setOpcode(int opcode){
+    m_opcode = opcode;
+}
+
 bool CacheMap::addrCheckByDirect(int tag, int blMp, int blMc) {
 #ifdef DEBUG
     std::cout <<"[CACHE MAP][DIRECT] tag: "<< int(tag) <<"| blMP: " << int(blMp) << "| blMC: " << int(blMc) << std::endl;
@@ -27,7 +24,11 @@ bool CacheMap::addrCheckByDirect(int tag, int blMp, int blMc) {
     while(i < CACHE_NUM_BLOCKS){
 
         if(m_cacheDir[i] != nullptr && (m_cacheDir[i]->tag == tag) && (m_cacheDir[i]->blMp == blMp) && (i == blMc))
+        {
+            if(m_opcode == OPCODE_WRITE)
+                m_cacheDir[i]->dirty = true;
             return true;
+        }
         else
             i++;
     }
@@ -37,6 +38,10 @@ bool CacheMap::addrCheckByDirect(int tag, int blMp, int blMc) {
     newBlock->tag = tag;
     newBlock->blMp = blMp;
     newBlock->blMc = blMc;
+
+    if(m_cacheDir[blMc] != nullptr)
+        newBlock->replaced = true;
+
     m_cacheDir[blMc] = newBlock;
     return false;
 }
@@ -48,8 +53,16 @@ bool CacheMap::addrCheckBySetAssoc(int tag, int blMp, int setId) {
     int i = 0;
     while(i < CACHE_NUM_BLOCKS){
         if(m_cacheDir[i] != nullptr && (m_cacheDir[i]->tag == tag) && (m_cacheDir[i]->setId == setId)){
-            m_cacheDir[i]->lruCounter = getBlockNumAndReduceLRU(setId);
-            return true; // Si HIT, ¿hay que actualizar LRU-FIFO?
+            if(m_opcode == OPCODE_WRITE)
+                m_cacheDir[i]->dirty = true;
+            /**
+             * Modifico counters on hit.
+             */
+            if(m_algorithm == ALGORITHM_LRU)
+                m_cacheDir[i]->lruCounter = getBlockNumAndReduceLRU(setId);
+            else
+                increaseFIFOCounters(setId);
+            return true;
         }
         else
             i++;
@@ -72,8 +85,16 @@ bool CacheMap::addrCheckByTotAssoc(int tag) {
     int i = 0;
     while(i < CACHE_NUM_BLOCKS){
         if(m_cacheDir[i] != nullptr && (m_cacheDir[i]->tag == tag)){
-            m_cacheDir[i]->lruCounter = getBlockNumAndReduceLRU();
-            return true;  // Si HIT, ¿hay que actualizar LRU-FIFO?
+            /**
+             * Modifico counters on hit.
+             */
+            if(m_opcode == OPCODE_WRITE)
+                m_cacheDir[i]->dirty = true;
+
+            if(m_algorithm == ALGORITHM_LRU)
+                m_cacheDir[i]->lruCounter = getBlockNumAndReduceLRU();
+            else
+                increaseFIFOCounters();
         }
         else
             i++;
@@ -93,9 +114,12 @@ void CacheMap::manageCacheInsertion(CacheElement* cElement) {
 
     void (*pFunc)(int, int &, int &, int) = nullptr;
 
-    if(m_algorithm == ALGORITHM_FIFO){ // Por orden de entrada
+    if(m_opcode == OPCODE_WRITE)
+        cElement->dirty = true;
+
+    if(m_algorithm == ALGORITHM_FIFO){
         cElement->fifoCounter = 0;
-        increaseFIFOCounters(cElement->setId); // TODO: Y SI ES HIT? Hay que incrementar también
+        increaseFIFOCounters(cElement->setId);
         pFunc = compareAsc;
     }else if(m_algorithm == ALGORITHM_LRU){
         cElement->lruCounter = getBlockNumAndReduceLRU(cElement->setId);
@@ -106,6 +130,10 @@ void CacheMap::manageCacheInsertion(CacheElement* cElement) {
     int cPos = getCachePosOrEmpty(cElement->setId, pFunc);
     if(cPos != -1){
         cElement->blMc = cPos;
+
+        if(m_cacheDir[cPos] != nullptr) // TODO: Mensaje diciendo que ha sido reemplazado?
+            cElement->replaced = true;
+
         m_cacheDir[cPos] = cElement;
     }
 }
@@ -131,20 +159,13 @@ int CacheMap::getBlockNumAndReduceLRU(int set) {
     return amount;
 }
 
-
 int CacheMap::getCachePosOrEmpty(int set, void(*compareFuncPtr)(int, int&, int&, int)) {
 
-    /**
-     * Creo que a la hora de hacer con FIFO, sería igual
-     * pero en lugar de buscar el lower, sería buscar el higher.
-     *
-     * Mirar a ver si puedes hacer esto con template o similar mejor.
-     */
     int cmp = (m_algorithm == ALGORITHM_FIFO) ? 0 : CACHE_NUM_BLOCKS;
-
     int cachePos = -1;
     int i = 0;
-    int setMax = 0; // si conju
+    int setMax = 0;
+
     while(i < CACHE_NUM_BLOCKS){
         if(m_cacheDir[i] != nullptr){
 

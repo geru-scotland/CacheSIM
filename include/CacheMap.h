@@ -7,19 +7,22 @@
 
 #include "SharedDefines.h"
 
-typedef struct {
-    int blMp;
-    int blMc;
-    int tag;
-    int setId;
+struct CacheElement{
+    int blMp = -1;
+    int blMc = -1;
+    int tag = -1;
+    int setId = -1;
 
-    int lruCounter;
-    int fifoCounter;
+    int lruCounter = 0;
+    int fifoCounter = 0;
 
-    bool free;
-    bool dirty;
-    bool replaced;
-} CacheElement;
+    /**
+     * Implementar con flags bitwise mejor.
+     */
+    bool free = false; //TODO: Hardcodear en display, if nullptr, que ponga free y quitar esto.
+    bool dirty = false;
+    bool replaced = false;
+};
 
 /**
  * Matriz de punteros a CacheElement
@@ -28,6 +31,7 @@ class CacheMap {
 
 public:
     CacheMap(int algorithm, int setSize);
+    void setOpcode(int opcode);
 
     bool addrCheckByDirect(int tag, int blMp, int blMc);
     bool addrCheckBySetAssoc(int tag, int blMp, int setId);
@@ -38,6 +42,7 @@ public:
 
 private:
     void manageCacheInsertion(CacheElement* ce);
+
     /**
      * LRU
      */
@@ -52,7 +57,7 @@ private:
     CacheElement* m_cacheDir[CACHE_NUM_BLOCKS]{};
     int m_algorithm;
     int m_setSize;
-
+    int m_opcode;
 };
 
 #endif //CACHESIM_CACHEMAP_H
