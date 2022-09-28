@@ -25,6 +25,7 @@ bool CacheMap::addrCheckByDirect(int tag, int blMp, int blMc) {
 
         if(m_cacheDir[i] != nullptr && (m_cacheDir[i]->tag == tag) && (m_cacheDir[i]->blMp == blMp) && (i == blMc))
         {
+            DataMgr::storeResultData(blMc, m_cacheDir[i]->blMp, blMp, (int)m_cacheDir[i]->dirty, m_opcode);
             if(m_opcode == OPCODE_WRITE)
                 m_cacheDir[i]->dirty = true;
             return true;
@@ -42,7 +43,9 @@ bool CacheMap::addrCheckByDirect(int tag, int blMp, int blMc) {
     if(m_cacheDir[blMc] != nullptr){
         newBlock->replaced = true;
         DataMgr::setLastOpStatus(CACHE_FLAG_REPLACED);
-    }
+        DataMgr::storeResultData(blMc, m_cacheDir[blMc]->blMp, newBlock->blMp, (int)m_cacheDir[blMc]->dirty, m_opcode);
+    }else
+        DataMgr::storeResultData(blMc, blMc, newBlock->blMp, 0, m_opcode);
 
     m_cacheDir[blMc] = newBlock;
     return false;
@@ -55,6 +58,8 @@ bool CacheMap::addrCheckBySetAssoc(int tag, int blMp, int setId) {
     int i = 0;
     while(i < CACHE_NUM_BLOCKS){
         if(m_cacheDir[i] != nullptr && (m_cacheDir[i]->tag == tag) && (m_cacheDir[i]->setId == setId)){
+
+            DataMgr::storeResultData(i, m_cacheDir[i]->blMp, blMp, (int)m_cacheDir[i]->dirty, m_opcode);
             if(m_opcode == OPCODE_WRITE)
                 m_cacheDir[i]->dirty = true;
             /**
@@ -88,6 +93,7 @@ bool CacheMap::addrCheckByTotAssoc(int tag) {
     int i = 0;
     while(i < CACHE_NUM_BLOCKS){
         if(m_cacheDir[i] != nullptr && (m_cacheDir[i]->tag == tag)){
+            DataMgr::storeResultData(i, m_cacheDir[i]->blMp, m_cacheDir[i]->blMp, (int)m_cacheDir[i]->dirty, m_opcode);
             /**
              * Modifico counters on hit.
              */
@@ -140,7 +146,10 @@ void CacheMap::manageCacheInsertion(CacheElement* cElement) {
         {
             cElement->replaced = true;
             DataMgr::setLastOpStatus(CACHE_FLAG_REPLACED);
-        }
+            // Bloque Cache que se toca, BloqueMP antiguo
+            DataMgr::storeResultData(cPos, m_cacheDir[cPos]->blMp, cElement->blMp, (int)m_cacheDir[cPos]->dirty);
+        } else
+            DataMgr::storeResultData(cPos, cElement->blMp, cElement->blMp, 0);
 
         m_cacheDir[cPos] = cElement;
     }
@@ -226,13 +235,14 @@ void CacheMap::display(){
     std::cout << std::endl;
 
     switch(m_displayMode){
-
         case DISPLAY_DIRECT:
             displayDirect();
             break;
         case DISPLAY_TOTAL_ASOC:
+            displayDirect(); // TODO: Cambiar
             break;
         case DISPLAY_SET_ASOC:
+            displayDirect(); // TODO: CAMBIAR
             break;
         default:
             break;

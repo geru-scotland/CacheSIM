@@ -38,6 +38,15 @@ enum DisplayMode {
     DISPLAY_SET_ASOC
 };
 
+enum DisplayFlags {
+    DISPLAY_FLAG_CACHE_BLOCK = 1,
+    DISPLAY_FLAG_SET         = 2,
+    DISPLAY_FLAG_TAG         = 4,
+    DISPLAY_FLAG_BLMP        = 8,
+    DISPLAY_FLAG_LRU         = 16,
+    DISPLAY_FLAG_FIFO        = 32
+};
+
 /*
  * Funciones auxiliares sobre las que se generarán punteros para poder ser pasadas
  * como parámetros.

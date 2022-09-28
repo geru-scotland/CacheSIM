@@ -12,6 +12,7 @@ int DataMgr::m_totalCicles;
 int DataMgr::m_hits;
 int DataMgr::m_accesses;
 CacheFlags DataMgr::m_status;
+int DataMgr::data[MAX_STORED_DATA];
 
 void DataMgr::Init(int wordsPerBlock){
     m_wordsPerBlock = wordsPerBlock;
@@ -23,6 +24,14 @@ void DataMgr::Init(int wordsPerBlock){
 
 void DataMgr::ResetStatus(){
     m_status = CACHE_FLAG_NONE;
+}
+
+void DataMgr::storeResultData(int blMc, int blMpPrev, int blMpNew, int dirty, int opcode) {
+    data[DATA_CACHE_BLOCK] = blMc;
+    data[DATA_MP_BLOCK] = blMpPrev;
+    data[DATA_MP_NEW] = blMpNew;
+    data[DATA_DIRTY] = dirty;
+    data[DATA_OPCODE] = opcode;
 }
 
 /**
@@ -54,11 +63,25 @@ void DataMgr::computeOpTime(bool hit) {
 }
 
 void DataMgr::displayOpResult(bool hit, int cicles) {
-    string result = "";
-    hit ? result = "[HIT] " : result = "[MISS] ";
-    m_status == CACHE_FLAG_REPLACED ? result.append("[REPLACEMENT]") : result.append("");
-
-    cout << result << " Cicles: "<< cicles << endl;
+    if(hit){
+        cout << "[HIT] Found block " << data[DATA_MP_BLOCK] << " in Cache position " << data[DATA_CACHE_BLOCK];
+        if(data[DATA_OPCODE] == OPCODE_WRITE)
+            cout << " (WRITE)";
+        cout << endl;
+    }else{
+        if(m_status == CACHE_FLAG_REPLACED){
+            cout << "[MISS][REPLACEMENT]";
+            if(data[DATA_DIRTY]){
+                cout << " Block " << data[DATA_MP_BLOCK] << " in Cache position "<< data[DATA_CACHE_BLOCK] <<" was dirty -> transferring it to buffer." << endl;
+                cout << "[OVERRIDE] New block: " << data[DATA_MP_NEW];
+            }else
+                cout << "[OVERRIDE] Replacing block "<< data[DATA_MP_BLOCK] <<" (not dirty) with New block: " << data[DATA_MP_NEW] << " in Cache position: "<< data[DATA_CACHE_BLOCK];
+        } else{
+            cout << "[MISS] Block "<< data[DATA_MP_NEW] <<" not found in Cache. Inserting it into a free cache position: " << data[DATA_CACHE_BLOCK];
+        }
+    }
+    cout << endl;
+    cout <<"[TIME] Cicles: "<< cicles << endl;
 }
 
 void DataMgr::setLastOpStatus(CacheFlags flags) { m_status = flags; }
