@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cmath>
 #include "CacheMgr.h"
+#include "DataMgr.h"
 
 CacheMgr::CacheMgr() {
 
@@ -25,8 +26,10 @@ void CacheMgr::manageNewOperation(int addr, bool opcode) {
     int byteBits = int(log2(m_wordSize));
     int tag = 0;
     int blMp = int(addr / pow(2, wordBits + byteBits));
-
+    bool hit = false;
     cacheMap->setOpcode(opcode);
+
+    DataMgr::increaseAccesses();
 
     switch(m_setSize) {
         case ASSOC_DIRECT:
@@ -34,16 +37,7 @@ void CacheMgr::manageNewOperation(int addr, bool opcode) {
             int blMc = int(blMp % int(pow(2, blockBits)));
             tag = int(blMp / pow(2, blockBits));
 
-            if(cacheMap->addrCheckByDirect(tag, blMp, blMc))
-            {
-                //Acierto. Mostrar calculos
-                std::cout << std::endl;
-                std::cout << "HIT!" << std::endl;
-            }else{
-                //Miss, lo traes. Mostrar calculos
-                std::cout << std::endl;
-                std::cout << "MISS!" << std::endl;
-            }
+            hit = cacheMap->addrCheckByDirect(tag, blMp, blMc);
             break;
         }
         case ASSOC_SET_2:
@@ -52,28 +46,19 @@ void CacheMgr::manageNewOperation(int addr, bool opcode) {
             int setBits = int(log2(m_setSize));
             int setId = blMp % int(pow(2, setBits));
             tag = int(blMp / pow(2, setBits));
-            if(cacheMap->addrCheckBySetAssoc(tag, blMp, setId))
-            {
-                //Acierto
-            }
-            else{
 
-            }
+            hit = cacheMap->addrCheckBySetAssoc(tag, blMp, setId);
             break;
         }
         case ASSOC_TOTAL:
-            if(cacheMap->addrCheckByTotAssoc(blMp))
-            {
-                std::cout << std::endl;
-                std::cout << "HIT!" << std::endl;
-            }
-            else{
-
-            }
+            hit = cacheMap->addrCheckByTotAssoc(blMp);
             break;
         default:
             break;
     }
 
+    //Tengo, si ha habido hit y ha habido reemplazo.
+    DataMgr::computeOpTime(hit);
     cacheMap->display();
+    DataMgr::ResetStatus();
 }

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <Simulator.h>
+#include "DataMgr.h"
 
 using namespace  std;
 
@@ -13,7 +14,7 @@ int main() {
     while(addr != -1){
         addr = sim.newAddress();
     }
-    // Show Global access data / Time.
-    // Clase stática que lo controle.
+
+    cout << "Total cicles: "<< DataMgr::getTotalCicles() << endl;
     return 0;
 }

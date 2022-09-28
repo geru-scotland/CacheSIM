@@ -26,6 +26,7 @@ enum OPcodes{
 };
 
 enum CacheFlags {
+    CACHE_FLAG_NONE = 0,
     CACHE_FLAG_DIRTY = 1,
     CACHE_FLAG_REPLACED = 2,
     CACHE_FLAG_FREE = 4,

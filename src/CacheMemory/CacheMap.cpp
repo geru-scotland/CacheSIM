@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include "CacheMap.h"
-
+#include "DataMgr.h"
 
 CacheMap::CacheMap(int algorithm, int setSize){
     m_algorithm = algorithm;
@@ -39,8 +39,10 @@ bool CacheMap::addrCheckByDirect(int tag, int blMp, int blMc) {
     newBlock->blMp = blMp;
     newBlock->blMc = blMc;
 
-    if(m_cacheDir[blMc] != nullptr)
+    if(m_cacheDir[blMc] != nullptr){
         newBlock->replaced = true;
+        DataMgr::setLastOpStatus(CACHE_FLAG_REPLACED);
+    }
 
     m_cacheDir[blMc] = newBlock;
     return false;
@@ -62,6 +64,7 @@ bool CacheMap::addrCheckBySetAssoc(int tag, int blMp, int setId) {
                 m_cacheDir[i]->lruCounter = getBlockNumAndReduceLRU(setId);
             else
                 increaseFIFOCounters(setId);
+
             return true;
         }
         else
@@ -95,6 +98,8 @@ bool CacheMap::addrCheckByTotAssoc(int tag) {
                 m_cacheDir[i]->lruCounter = getBlockNumAndReduceLRU();
             else
                 increaseFIFOCounters();
+
+            return true;
         }
         else
             i++;
@@ -132,7 +137,10 @@ void CacheMap::manageCacheInsertion(CacheElement* cElement) {
         cElement->blMc = cPos;
 
         if(m_cacheDir[cPos] != nullptr) // TODO: Mensaje diciendo que ha sido reemplazado?
+        {
             cElement->replaced = true;
+            DataMgr::setLastOpStatus(CACHE_FLAG_REPLACED);
+        }
 
         m_cacheDir[cPos] = cElement;
     }

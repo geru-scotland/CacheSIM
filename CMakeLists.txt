@@ -12,4 +12,4 @@ add_executable(CacheSIM main.cpp
         src/CacheMemory/CacheMgr.cpp
         include/CacheMgr.h
         src/Simulator.cpp
-        include/Simulator.h include/SharedDefines.h)
+        include/Simulator.h include/SharedDefines.h src/DataMgr.cpp include/DataMgr.h)

@@ -4,6 +4,7 @@
 #include <iostream>
 #include "Simulator.h"
 #include "CacheMgr.h"
+#include "DataMgr.h"
 
 using namespace std;
 
@@ -50,7 +51,7 @@ void Simulator::initConfig(){
     cout << endl;
 
     cMgr->setConfig(wordSize, blockSize, setSize, replaceAlgorithm);
-
+    DataMgr::Init(blockSize/wordSize);
 }
 
 int16_t Simulator::newAddress() {
@@ -60,10 +61,14 @@ int16_t Simulator::newAddress() {
     cout << "Dirección de memoria:";
     cin >> addr;
     cout << endl;
-    cout << "Operación (0 ld, 1 st): ";
-    cin >> opcode;
-    cout << endl;
+
     if(addr != -1)
+    {
+        cout << "Operación (0 ld, 1 st): ";
+        cin >> opcode;
+        cout << endl;
         cMgr->manageNewOperation(addr, opcode);
+    }
+
     return addr;
 }
