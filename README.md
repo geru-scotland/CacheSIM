@@ -1,5 +1,7 @@
 # CacheSIM
 
+<img alt="CacheSim" src="images/example.png" /></a>
+
 Los binarios se pueden encontrar en la carpeta `CacheSym/bin` - para ejecutar el programa: `./CacheSym`.
 
 
