@@ -3,8 +3,11 @@
 //
 
 #include <iostream>
+#include <iomanip>
 #include "CacheMap.h"
 #include "DataMgr.h"
+
+using namespace std;
 
 CacheMap::CacheMap(int algorithm, int setSize){
     m_algorithm = algorithm;
@@ -17,7 +20,7 @@ void CacheMap::setOpcode(int opcode){
 
 bool CacheMap::addrCheckByDirect(int tag, int blMp, int blMc) {
 #ifdef DEBUG
-    std::cout <<"[CACHE MAP][DIRECT] tag: "<< int(tag) <<"| blMP: " << int(blMp) << "| blMC: " << int(blMc) << std::endl;
+    cout <<"[CACHE MAP][DIRECT] tag: "<< int(tag) <<"| blMP: " << int(blMp) << "| blMC: " << int(blMc) << endl;
 #endif //DEBUG
 
     int i = 0;
@@ -47,13 +50,16 @@ bool CacheMap::addrCheckByDirect(int tag, int blMp, int blMc) {
     }else
         DataMgr::storeResultData(blMc, blMc, newBlock->blMp, 0, m_opcode);
 
+    if(m_opcode == OPCODE_WRITE)
+        newBlock->dirty = true;
+
     m_cacheDir[blMc] = newBlock;
     return false;
 }
 
 bool CacheMap::addrCheckBySetAssoc(int tag, int blMp, int setId) {
 #ifdef DEBUG
-    std::cout <<"[CACHE MAP][SET ASSOC] tag: "<< int(tag) <<"| blMp: " << int(blMp) << "| setId: " << int(setId) << std::endl;
+    cout <<"[CACHE MAP][SET ASSOC] tag: "<< int(tag) <<"| blMp: " << int(blMp) << "| setId: " << int(setId) << endl;
 #endif //DEBUG
     int i = 0;
     while(i < CACHE_NUM_BLOCKS){
@@ -88,7 +94,7 @@ bool CacheMap::addrCheckBySetAssoc(int tag, int blMp, int setId) {
 
 bool CacheMap::addrCheckByTotAssoc(int tag) {
 #ifdef DEBUG
-    std::cout <<"[CACHE MAP][TOT ASSOC] blMp: " << int(blMp) << std::endl;
+    cout <<"[CACHE MAP][TOT ASSOC] blMp: " << int(blMp) << endl;
 #endif //DEBUG
     int i = 0;
     while(i < CACHE_NUM_BLOCKS){
@@ -226,13 +232,11 @@ void CacheMap::setDisplayMode(DisplayMode mode) { m_displayMode = mode; }
 
 void CacheMap::display(){
 
-    std::cout << std::endl;
-    std::cout << std::endl;
-    std::cout << "-------------" << std::endl;
-    std::cout << "CACHE CONTENT" << std::endl;
-    std::cout << "-------------" << std::endl;
-    std::cout << std::endl;
-    std::cout << std::endl;
+    cout << endl;
+    cout << "-------------" << endl;
+    cout << "CACHE CONTENT" << endl;
+    cout << "-------------" << endl;
+    cout << endl;
 
     switch(m_displayMode){
         case DISPLAY_DIRECT:
@@ -248,23 +252,25 @@ void CacheMap::display(){
             break;
     }
 
-    std::cout << std::endl;
-    std::cout << std::endl;
+    cout << endl;
+    cout << endl;
 }
 
 void CacheMap::displayDirect() {
 
-    std::cout << " MC (block)  |   TAG   |  MP (block)  | Dirty | Repl "<< std::endl;
-    std::cout << " ___________________________________________________"<< std::endl;
-    std::cout << std::endl;
+    cout << setw(11) << "MC (block)" << setw(4) << "|" << setw(7) << "TAG"
+    << setw(7) << "|" << setw(18) << "MP (block) "<< setw(5) <<"|" << setw(9)
+    << "Dirty"<< setw(7) <<"| " << setw(5) << "Repl"<< endl;
+    cout << " ________________________________________________________________________"<< endl;
+    cout << endl;
     int i = 0;
     while(i < CACHE_NUM_BLOCKS){
         if(m_cacheDir[i] != nullptr){
-            std::cout << "      " << int(m_cacheDir[i]->blMc)
-                      << "      |    " << int(m_cacheDir[i]->tag)
-                      << "          " << int(m_cacheDir[i]->blMp)
-                      << "          " << int(m_cacheDir[i]->dirty)
-                      << "          " << int(m_cacheDir[i]->replaced)<< std::endl;
+            cout << setw(8) << int(m_cacheDir[i]->blMc) << setw(7)
+            << "|" << setw(6) << int(m_cacheDir[i]->tag) << setw(8)
+            << "|" << setw(12)<< int(m_cacheDir[i]->blMp) << setw(11)
+            << "|" << setw(7)<< int(m_cacheDir[i]->dirty) << setw(8)
+            << "|" << setw(4)<< int(m_cacheDir[i]->replaced)<< endl;
         }
 
         i++;
@@ -275,18 +281,21 @@ void CacheMap::displayTotalAsoc() {
 
     std::string algorithm;
     m_algorithm == ALGORITHM_LRU ? algorithm = "LRU" : algorithm = "FIFO";
-    std::cout << " MC (block)  |   TAG/MP (block)  | "<< algorithm << " | Dirty | Repl "<< std::endl;
-    std::cout << " ___________________________________________________________"<< std::endl;
-    std::cout << std::endl;
+
+    cout << setw(11) << "MC (block)" << setw(4) << "|" << setw(17) << "TAG/MP (block)"
+         << setw(4) << "|" << setw(7) << algorithm << setw(5) <<"|" << setw(9)
+         << "Dirty"<< setw(7) <<"| " << setw(5) << "Repl"<< endl;
+    cout << " ______________________________________________________________________"<< endl;
+    cout << endl;
     int i = 0;
     while(i < CACHE_NUM_BLOCKS){
         if(m_cacheDir[i] != nullptr){
             int counterData = m_algorithm == ALGORITHM_LRU ? int(m_cacheDir[i]->lruCounter) : int(m_cacheDir[i]->fifoCounter);
-            std::cout << "      " << int(m_cacheDir[i]->blMc)
-                      << "              " << int(m_cacheDir[i]->blMp)
-                      << "            " << int(counterData)
-                      << "           " << int(m_cacheDir[i]->dirty)
-                      << "        " << int(m_cacheDir[i]->replaced)<< std::endl;
+            cout << setw(8) << int(m_cacheDir[i]->blMc) << setw(9)
+            << setw(18) << int(m_cacheDir[i]->blMp)  << setw(14)
+            << setw(16) << int(counterData) << setw(10)
+            << setw(13) << int(m_cacheDir[i]->dirty) << setw(10)
+            << setw(12) << int(m_cacheDir[i]->replaced)<< endl;
         }
 
         i++;
@@ -296,20 +305,23 @@ void CacheMap::displayTotalAsoc() {
 void CacheMap::displaySetAssoc() {
     std::string algorithm;
     m_algorithm == ALGORITHM_LRU ? algorithm = "LRU" : algorithm = "FIFO";
-    std::cout << " MC (block)  |   SET   |   TAG   |  MP (block)  | "<< std::string(algorithm) << " | Dirty | Repl "<< std::endl;
-    std::cout << " ______________________________________________________________________"<< std::endl;
-    std::cout << std::endl;
+
+    cout << setw(11) << "MC (block)" << setw(4) << "|" << setw(5) << "SET" << setw(3) << "|" << setw(5) << "TAG"
+         << setw(3) << "|" << setw(15) << "MP (block) " << setw(3) << "|" << setw(5) << algorithm << setw(3) <<"|"
+         << setw(6)<< "Dirty"<< setw(4) <<"| " << setw(5) << "Repl"<< endl;
+    cout << " _______________________________________________________________________"<< endl;
+    cout << endl;
     int i = 0;
     while(i < CACHE_NUM_BLOCKS){
         if(m_cacheDir[i] != nullptr){
             int counterData = m_algorithm == ALGORITHM_LRU ? int(m_cacheDir[i]->lruCounter) : int(m_cacheDir[i]->fifoCounter);
-            std::cout << "      " << int(m_cacheDir[i]->blMc)
-                    << "      |    " << int(m_cacheDir[i]->setId)
-                    << "    |    " << int(m_cacheDir[i]->tag)
-                    << "          " << int(m_cacheDir[i]->blMp)
-                    << "           " << int(counterData)
-                    << "     " << int(m_cacheDir[i]->dirty)
-                    << "     " << int(m_cacheDir[i]->replaced)<< std::endl;
+            cout << setw(8) << int(m_cacheDir[i]->blMc) << setw(8)
+                    << setw(11) << int(m_cacheDir[i]->setId) << setw(9)
+                    << setw(8) << int(m_cacheDir[i]->tag) << setw(9)
+                    << setw(14) << int(m_cacheDir[i]->blMp) << setw(9)
+                    << setw(12) << int(counterData) << setw(9)
+                    << setw(8) << int(m_cacheDir[i]->dirty) << setw(9)
+                    << setw(8) << int(m_cacheDir[i]->replaced)<< endl;
         }
 
         i++;

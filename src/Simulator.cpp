@@ -23,7 +23,7 @@ void Simulator::initConfig(){
     cout << endl;
     cout << endl;
     cout << "*******************" << endl;
-    cout << "** CACHESIM v.01 **" << endl;
+    cout << "** CACHESIM v.05 **" << endl;
     cout << "*******************" << endl;
     cout << endl;
     cout << endl;
@@ -35,27 +35,23 @@ void Simulator::initConfig(){
      * Data
      */
     while(wordSize != 4 && wordSize != 8){
-        cout << "Introduce el tamaño de la palabra (4 u 8 bytes): ";
+        cout << "Introduce word size (4 or 8 bytes): ";
         cin >> wordSize;
-        cout << endl;
     }
 
     while(blockSize!= 32 && blockSize!= 64) {
-        cout << "Introduce el tamaño del Bloque (32 o 64 bytes): ";
+        cout << "Introduce block size (32 or 64 bytes): ";
         cin >> blockSize;
-        cout << endl;
     }
 
     while(setSize!= 1 && setSize!= 2 && setSize!= 4 && setSize!= 8) {
-        cout << "Introduce el tamaño del conjunto (1 (directa), 2, 4 u 8 (totalmente asociativa): ";
+        cout << "Introduce set size (1 (direct), 2, 4 u 8 (totally assoc): ";
         cin >> setSize;
-        cout << endl;
     }
 
     while(replaceAlgorithm != 0 && replaceAlgorithm!= 1) {
-        cout << "Introduce el algoritmo de reemplazo: 0 (FIFO) - 1 (LRU): ";
+        cout << "Introduce a replacement algorithm 0 (FIFO) - 1 (LRU): ";
         cin >> replaceAlgorithm;
-        cout << endl;
     }
     cMgr->setConfig(wordSize, blockSize, setSize, replaceAlgorithm);
     DataMgr::Init(blockSize/wordSize);
@@ -65,14 +61,13 @@ int16_t Simulator::newAddress() {
 
     int16_t addr = 0;
     int opcode = -1;
-    cout << "Dirección de memoria: ";
+    cout << "Address: ";
     cin >> addr;
-    cout << endl;
 
     if(addr != -1)
     {
         while(opcode != 0 && opcode!= 1) {
-            cout << "Operación (0 ld, 1 st): ";
+            cout << "Operation(0 ld, 1 st): ";
             cin >> opcode;
             cout << endl;
         }

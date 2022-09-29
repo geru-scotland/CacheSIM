@@ -63,22 +63,23 @@ void DataMgr::computeOpTime(bool hit) {
 }
 
 void DataMgr::displayOpResult(bool hit, int cicles) {
-
+    cout << "______________________________________________________" << endl;
+    cout << "______________________________________________________" << endl;
     if(hit){
-        cout << "[HIT] Found block " << data[DATA_MP_BLOCK] << " in Cache position " << data[DATA_CACHE_BLOCK];
+        cout  << "\033[1;32m[HIT]\033[0m" << " Found block " << data[DATA_MP_BLOCK] << " in Cache position " << data[DATA_CACHE_BLOCK];
         if(data[DATA_OPCODE] == OPCODE_WRITE)
             cout << " (WRITE)";
         cout << endl;
     }else{
         if(m_status == CACHE_FLAG_REPLACED){
-            cout << "[MISS][REPLACEMENT]";
+            cout << "\033[1;31m[MISS]\033[0m"<<"\033[1;33m[REPLACEMENT]\033[0m";
             if(data[DATA_DIRTY]){
                 cout << " Block " << data[DATA_MP_BLOCK] << " in Cache position "<< data[DATA_CACHE_BLOCK] <<" was dirty -> transferring it to buffer." << endl;
-                cout << "[OVERRIDE] New block: " << data[DATA_MP_NEW];
+                cout << "\033[1;35m[OVERRIDE]\033[0m"<<" New block: " << data[DATA_MP_NEW];
             }else
-                cout << "[OVERRIDE] Replacing block "<< data[DATA_MP_BLOCK] <<" (not dirty) with New block: " << data[DATA_MP_NEW] << " in Cache position: "<< data[DATA_CACHE_BLOCK];
+                cout << "Replacing block "<< data[DATA_MP_BLOCK] <<" (not dirty) with New block: " << data[DATA_MP_NEW] << " in Cache position: "<< data[DATA_CACHE_BLOCK];
         } else{
-            cout << "[MISS] Block "<< data[DATA_MP_NEW] <<" not found in Cache. Inserting it into a free cache position: " << data[DATA_CACHE_BLOCK];
+            cout << "\033[1;31m[MISS]\033[0m" << " Block "<< data[DATA_MP_NEW] <<" not found in Cache. Inserting it into a free cache position: " << data[DATA_CACHE_BLOCK];
         }
     }
     cout << endl;
