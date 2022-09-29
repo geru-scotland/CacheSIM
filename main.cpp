@@ -14,7 +14,11 @@ int main() {
     while(addr != -1){
         addr = sim.newAddress();
     }
-
+    cout << endl;
+    cout << endl;
+    cout << "Ending simulation..." << endl;
+    cout << endl;
+    cout << endl;
     cout << "[DATA] Total cicles: "<< DataMgr::getTotalCicles() << endl;
     cout << "[DATA] Total accesses: "<< DataMgr::getTotalAccesses() << endl;
     cout << "[DATA] Total hits: "<< DataMgr::getTotalHits() << endl;

@@ -239,10 +239,10 @@ void CacheMap::display(){
             displayDirect();
             break;
         case DISPLAY_TOTAL_ASOC:
-            displayDirect(); // TODO: Cambiar
+            displayTotalAsoc();
             break;
         case DISPLAY_SET_ASOC:
-            displayDirect(); // TODO: CAMBIAR
+            displaySetAssoc();
             break;
         default:
             break;
@@ -254,12 +254,17 @@ void CacheMap::display(){
 
 void CacheMap::displayDirect() {
 
-    //Show column names.
+    std::cout << " MC (block)  |   TAG   |  MP (block)  | Dirty | Repl "<< std::endl;
+    std::cout << " ___________________________________________________"<< std::endl;
+    std::cout << std::endl;
     int i = 0;
     while(i < CACHE_NUM_BLOCKS){
         if(m_cacheDir[i] != nullptr){
-            std::cout << "CacheBlock: " << int(m_cacheDir[i]->blMc) << " Set: "<< int(m_cacheDir[i]->setId)<<"| tag: " << int(m_cacheDir[i]->tag)
-                      << " | blMP: " << int(m_cacheDir[i]->blMp) << " | LRU: " << int(m_cacheDir[i]->lruCounter) <<  "| FIFO: " << int(m_cacheDir[i]->fifoCounter) << std::endl;
+            std::cout << "      " << int(m_cacheDir[i]->blMc)
+                      << "      |    " << int(m_cacheDir[i]->tag)
+                      << "          " << int(m_cacheDir[i]->blMp)
+                      << "          " << int(m_cacheDir[i]->dirty)
+                      << "          " << int(m_cacheDir[i]->replaced)<< std::endl;
         }
 
         i++;
@@ -268,8 +273,45 @@ void CacheMap::displayDirect() {
 
 void CacheMap::displayTotalAsoc() {
 
+    std::string algorithm;
+    m_algorithm == ALGORITHM_LRU ? algorithm = "LRU" : algorithm = "FIFO";
+    std::cout << " MC (block)  |   TAG/MP (block)  | "<< algorithm << " | Dirty | Repl "<< std::endl;
+    std::cout << " ___________________________________________________________"<< std::endl;
+    std::cout << std::endl;
+    int i = 0;
+    while(i < CACHE_NUM_BLOCKS){
+        if(m_cacheDir[i] != nullptr){
+            int counterData = m_algorithm == ALGORITHM_LRU ? int(m_cacheDir[i]->lruCounter) : int(m_cacheDir[i]->fifoCounter);
+            std::cout << "      " << int(m_cacheDir[i]->blMc)
+                      << "              " << int(m_cacheDir[i]->blMp)
+                      << "            " << int(counterData)
+                      << "           " << int(m_cacheDir[i]->dirty)
+                      << "        " << int(m_cacheDir[i]->replaced)<< std::endl;
+        }
+
+        i++;
+    }
 }
 
 void CacheMap::displaySetAssoc() {
+    std::string algorithm;
+    m_algorithm == ALGORITHM_LRU ? algorithm = "LRU" : algorithm = "FIFO";
+    std::cout << " MC (block)  |   SET   |   TAG   |  MP (block)  | "<< std::string(algorithm) << " | Dirty | Repl "<< std::endl;
+    std::cout << " ______________________________________________________________________"<< std::endl;
+    std::cout << std::endl;
+    int i = 0;
+    while(i < CACHE_NUM_BLOCKS){
+        if(m_cacheDir[i] != nullptr){
+            int counterData = m_algorithm == ALGORITHM_LRU ? int(m_cacheDir[i]->lruCounter) : int(m_cacheDir[i]->fifoCounter);
+            std::cout << "      " << int(m_cacheDir[i]->blMc)
+                    << "      |    " << int(m_cacheDir[i]->setId)
+                    << "    |    " << int(m_cacheDir[i]->tag)
+                    << "          " << int(m_cacheDir[i]->blMp)
+                    << "           " << int(counterData)
+                    << "     " << int(m_cacheDir[i]->dirty)
+                    << "     " << int(m_cacheDir[i]->replaced)<< std::endl;
+        }
 
+        i++;
+    }
 }

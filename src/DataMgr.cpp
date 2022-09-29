@@ -63,6 +63,7 @@ void DataMgr::computeOpTime(bool hit) {
 }
 
 void DataMgr::displayOpResult(bool hit, int cicles) {
+
     if(hit){
         cout << "[HIT] Found block " << data[DATA_MP_BLOCK] << " in Cache position " << data[DATA_CACHE_BLOCK];
         if(data[DATA_OPCODE] == OPCODE_WRITE)
