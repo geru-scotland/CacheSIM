@@ -9,3 +9,8 @@ Si se desea compilar el simulador de Cache desde las fuentes, tan sólo hay que 
 2) ``make``
 3) ``./CacheSym``
 
+
+# About CacheSim
+
+Proyecto realizado por Aingeru Garcia (a.k.a Basajaun), para la asignatura  de arquitectura de computadores (Facultad de Informática de Donostia).
+
