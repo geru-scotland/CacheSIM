@@ -1,6 +1,13 @@
 # CacheSIM
 
+CacheSim es un simple simulador que trata de trabajar aspectos relacionados a la Memoria Cache, como las diferentes correspondencias, extracción de información de las direcciones que pide la CPU, etc.
+
+<br />
+
 <img alt="CacheSim" src="images/example.png" /></a>
+
+
+# Uso
 
 Los binarios se pueden encontrar en la carpeta `CacheSym/bin` - para ejecutar el programa: `./CacheSym`.
 
