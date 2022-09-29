@@ -35,15 +35,7 @@ void DataMgr::storeResultData(int blMc, int blMpPrev, int blMpNew, int dirty, in
 }
 
 /**
- * Tmc = 2c
- * Tmp = 21c
- * Tbuff = 1c
- *
- * Acierto: Tmc
- *
- * Ttb: Tmp + (palabras/bloque -1)*Ttbuff
- * Fallo SIN reemplazo: Tmc + Ttb
- * Fallo CON reemplazo: Tmc + 2Ttb
+ * Cálculo de ciclos
  */
 void DataMgr::computeOpTime(bool hit) {
     int opCicles = 0;
@@ -62,6 +54,9 @@ void DataMgr::computeOpTime(bool hit) {
     displayOpResult(hit, opCicles);
 }
 
+/**
+ * Volcado de información sobre la última instrucción.
+ */
 void DataMgr::displayOpResult(bool hit, int cicles) {
     cout << "______________________________________________________" << endl;
     cout << "______________________________________________________" << endl;

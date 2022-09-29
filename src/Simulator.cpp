@@ -12,7 +12,6 @@ Simulator::Simulator() {
     cMgr = new CacheMgr();
 }
 
-
 void Simulator::initConfig(){
 
     int wordSize = 0;

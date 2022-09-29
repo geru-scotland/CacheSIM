@@ -18,6 +18,9 @@ void CacheMap::setOpcode(int opcode){
     m_opcode = opcode;
 }
 
+/**
+ * Método que gestiona lo relativo a la correspondencia directa.
+ */
 bool CacheMap::addrCheckByDirect(int tag, int blMp, int blMc) {
 #ifdef DEBUG
     cout <<"[CACHE MAP][DIRECT] tag: "<< int(tag) <<"| blMP: " << int(blMp) << "| blMC: " << int(blMc) << endl;
@@ -36,8 +39,9 @@ bool CacheMap::addrCheckByDirect(int tag, int blMp, int blMc) {
         else
             i++;
     }
-    // No existía, la inserto en cache y devuelvo false para que se sepa que
-    // Ha habido fallo.
+
+    // Miss
+
     CacheElement* newBlock = new CacheElement;
     newBlock->tag = tag;
     newBlock->blMp = blMp;
@@ -57,6 +61,10 @@ bool CacheMap::addrCheckByDirect(int tag, int blMp, int blMc) {
     return false;
 }
 
+/**
+ * Método que gestiona lo relativo a la correspondencia
+ * asociativa por conjuntos.
+ */
 bool CacheMap::addrCheckBySetAssoc(int tag, int blMp, int setId) {
 #ifdef DEBUG
     cout <<"[CACHE MAP][SET ASSOC] tag: "<< int(tag) <<"| blMp: " << int(blMp) << "| setId: " << int(setId) << endl;
@@ -68,9 +76,7 @@ bool CacheMap::addrCheckBySetAssoc(int tag, int blMp, int setId) {
             DataMgr::storeResultData(i, m_cacheDir[i]->blMp, blMp, (int)m_cacheDir[i]->dirty, m_opcode);
             if(m_opcode == OPCODE_WRITE)
                 m_cacheDir[i]->dirty = true;
-            /**
-             * Modifico counters on hit.
-             */
+
             if(m_algorithm == ALGORITHM_LRU)
                 m_cacheDir[i]->lruCounter = getBlockNumAndReduceLRU(setId);
             else
@@ -82,6 +88,8 @@ bool CacheMap::addrCheckBySetAssoc(int tag, int blMp, int setId) {
             i++;
     }
 
+    // Miss
+
     CacheElement* ce = new CacheElement();
     ce->tag = tag;
     ce->blMp = blMp;
@@ -92,6 +100,10 @@ bool CacheMap::addrCheckBySetAssoc(int tag, int blMp, int setId) {
     return false;
 }
 
+/**
+ * Método que gestiona lo relativo a la correspondencia totalmente
+ * asociativa.
+ */
 bool CacheMap::addrCheckByTotAssoc(int tag) {
 #ifdef DEBUG
     cout <<"[CACHE MAP][TOT ASSOC] blMp: " << int(blMp) << endl;
@@ -100,9 +112,7 @@ bool CacheMap::addrCheckByTotAssoc(int tag) {
     while(i < CACHE_NUM_BLOCKS){
         if(m_cacheDir[i] != nullptr && (m_cacheDir[i]->tag == tag)){
             DataMgr::storeResultData(i, m_cacheDir[i]->blMp, m_cacheDir[i]->blMp, (int)m_cacheDir[i]->dirty, m_opcode);
-            /**
-             * Modifico counters on hit.
-             */
+
             if(m_opcode == OPCODE_WRITE)
                 m_cacheDir[i]->dirty = true;
 
@@ -117,6 +127,8 @@ bool CacheMap::addrCheckByTotAssoc(int tag) {
             i++;
     }
 
+    // Miss
+
     CacheElement* ce = new CacheElement();
     ce->tag = tag;
     ce->blMp = tag;
@@ -127,8 +139,13 @@ bool CacheMap::addrCheckByTotAssoc(int tag) {
     return false;
 }
 
+/**
+ * Gestión de los miss para las correspondencias asociativas (ambas)
+ * @param cElement Puntero a struct del tipo CacheElement
+ */
 void CacheMap::manageCacheInsertion(CacheElement* cElement) {
 
+    // Puntero a función, para poder pasarla como parámetro.
     void (*pFunc)(int, int &, int &, int) = nullptr;
 
     if(m_opcode == OPCODE_WRITE)
@@ -144,6 +161,10 @@ void CacheMap::manageCacheInsertion(CacheElement* cElement) {
         pFunc = compareDesc;
     }
 
+    /**
+     * Una vez decidida la función que se utilizará en base al
+     * algoritmo seleccionado, se pasa su referencia como parámetro.
+     */
     int cPos = getCachePosOrEmpty(cElement->setId, pFunc);
     if(cPos != -1){
         cElement->blMc = cPos;
@@ -161,6 +182,9 @@ void CacheMap::manageCacheInsertion(CacheElement* cElement) {
     }
 }
 
+/**
+ * Método auxiliar para el algoritmo LRU
+ */
 int CacheMap::getBlockNumAndReduceLRU(int set) {
 
     int i = 0;
@@ -182,6 +206,10 @@ int CacheMap::getBlockNumAndReduceLRU(int set) {
     return amount;
 }
 
+/**
+ * Método para determinar la posición de caché que le corresponde a un
+ * bloque.
+ */
 int CacheMap::getCachePosOrEmpty(int set, void(*compareFuncPtr)(int, int&, int&, int)) {
 
     int cmp = (m_algorithm == ALGORITHM_FIFO) ? 0 : CACHE_NUM_BLOCKS;
@@ -212,6 +240,9 @@ int CacheMap::getCachePosOrEmpty(int set, void(*compareFuncPtr)(int, int&, int&,
     return cachePos;
 }
 
+/**
+ * Método auxiliar para el algoritmo FIFO
+ */
 void CacheMap::increaseFIFOCounters(int set){
     int i = 0;
     while(i < CACHE_NUM_BLOCKS){
@@ -228,6 +259,9 @@ void CacheMap::increaseFIFOCounters(int set){
     }
 }
 
+/**
+ * Diferentes métodos para el output
+ */
 void CacheMap::setDisplayMode(DisplayMode mode) { m_displayMode = mode; }
 
 void CacheMap::display(){

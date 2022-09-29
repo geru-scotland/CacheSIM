@@ -16,14 +16,18 @@ struct CacheElement{
     int lruCounter = 0;
     int fifoCounter = 0;
 
-    /**
-     * Implementar con flags bitwise mejor.
-     */
-    bool free = false; //TODO: Hardcodear en display, if nullptr, que ponga free y quitar esto.
+
+    //Todo: Implementar con flags bitwise mejor.
     bool dirty = false;
     bool replaced = false;
 };
 
+/**
+ * Clase encargada de gestionar la estructura de nuestra memoria cache
+ * en función de cada instrucción dada.
+ * Estructura base para representar la memoria cache:
+ * Array de punteros a struct del tipo CacheElement.
+ */
 class CacheMap {
 
 public:

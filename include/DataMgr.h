@@ -22,6 +22,10 @@ enum StoredData {
     DATA_OPCODE
 };
 
+/**
+ * Clase estática encargada de gestionar las diferentes
+ * estadísticas de la simulación.
+ */
 class DataMgr {
 public:
     static void Init(int wordsPerBlock);
