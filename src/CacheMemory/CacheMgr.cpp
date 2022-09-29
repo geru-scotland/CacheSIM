@@ -44,7 +44,7 @@ void CacheMgr::manageNewOperation(int addr, bool opcode) {
         case ASSOC_SET_2:
         case ASSOC_SET_4:
         {
-            int setBits = int(log2(m_setSize));
+            int setBits = int(log2(CACHE_NUM_BLOCKS/m_setSize));
             int setId = blMp % int(pow(2, setBits));
             tag = int(blMp / pow(2, setBits));
 

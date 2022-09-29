@@ -232,7 +232,7 @@ int CacheMap::getCachePosOrEmpty(int set, void(*compareFuncPtr)(int, int&, int&,
             }
         }
         else
-            if(m_setSize == CACHE_NUM_BLOCKS || (setMax < (CACHE_NUM_BLOCKS / m_setSize)))
+            if(m_setSize == CACHE_NUM_BLOCKS || (setMax < m_setSize))
                 return i;
 
         i++;
