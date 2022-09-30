@@ -173,7 +173,6 @@ void CacheMap::manageCacheInsertion(CacheElement* cElement) {
         {
             cElement->replaced = true;
             DataMgr::setLastOpStatus(CACHE_FLAG_REPLACED);
-            // Bloque Cache que se toca, BloqueMP antiguo
             DataMgr::storeResultData(cPos, m_cacheDir[cPos]->blMp, cElement->blMp, (int)m_cacheDir[cPos]->dirty);
         } else
             DataMgr::storeResultData(cPos, cElement->blMp, cElement->blMp, 0);
@@ -290,6 +289,7 @@ void CacheMap::display(){
     cout << endl;
 }
 
+//Todo: Aunar todos los métodos de display.
 void CacheMap::displayDirect() {
 
     cout << setw(11) << "MC (block)" << setw(4) << "|" << setw(7) << "TAG"

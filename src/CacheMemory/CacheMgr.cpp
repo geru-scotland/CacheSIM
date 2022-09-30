@@ -60,7 +60,6 @@ void CacheMgr::manageNewOperation(int addr, bool opcode) {
             break;
     }
 
-    //Tengo, si ha habido hit y ha habido reemplazo.
     DataMgr::computeOpTime(hit);
     cacheMap->display();
     DataMgr::ResetStatus();
