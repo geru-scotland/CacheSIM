@@ -34,6 +34,8 @@ bool CacheMap::addrCheckByDirect(int tag, int blMp, int blMc) {
             DataMgr::storeResultData(blMc, m_cacheDir[i]->blMp, blMp, (int)m_cacheDir[i]->dirty, m_opcode);
             if(m_opcode == OPCODE_WRITE)
                 m_cacheDir[i]->dirty = true;
+            else if(m_opcode == OPCODE_READ && m_cacheDir[i]->dirty)
+                m_cacheDir[i]->dirty = false;
             return true;
         }
         else
@@ -76,6 +78,9 @@ bool CacheMap::addrCheckBySetAssoc(int tag, int blMp, int setId) {
             DataMgr::storeResultData(i, m_cacheDir[i]->blMp, blMp, (int)m_cacheDir[i]->dirty, m_opcode);
             if(m_opcode == OPCODE_WRITE)
                 m_cacheDir[i]->dirty = true;
+            else if(m_opcode == OPCODE_READ && m_cacheDir[i]->dirty)
+                m_cacheDir[i]->dirty = false;
+
 
             if(m_algorithm == ALGORITHM_LRU)
                 m_cacheDir[i]->lruCounter = getBlockNumAndReduceLRU(setId);
@@ -115,6 +120,8 @@ bool CacheMap::addrCheckByTotAssoc(int tag) {
 
             if(m_opcode == OPCODE_WRITE)
                 m_cacheDir[i]->dirty = true;
+            else if(m_opcode == OPCODE_READ && m_cacheDir[i]->dirty)
+                m_cacheDir[i]->dirty = false;
 
             if(m_algorithm == ALGORITHM_LRU)
                 m_cacheDir[i]->lruCounter = getBlockNumAndReduceLRU();
