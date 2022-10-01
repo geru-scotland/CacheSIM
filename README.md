@@ -12,6 +12,10 @@ CacheSim es un simple simulador que trata de trabajar aspectos relacionados a la
 ### Linux/MacOs
 
 Los binarios ya precompilados se pueden encontrar en la carpeta `CacheSym/bin` - para ejecutar el programa: `./CacheSym`.
+Si un mensaje de error indicando que no se disponen de suficientes permisos aparece, ejecutar:
+
+1) ``sudo su``
+2) ``chmod +x CacheSym``
 
 
 Si se desea compilar el simulador de Cache desde las fuentes, tan sólo hay que situarse en el directorio del proyecto desde línea de comandos y ejecutar los siguientes comandos:
